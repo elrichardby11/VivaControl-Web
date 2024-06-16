@@ -44,3 +44,9 @@ Ahora estás listo para ejecutar el proyecto. Dependiendo de cómo esté configu
 
 ```bash
 python manage.py runserver
+```
+
+## Demo 
+
+![demogif](https://github.com/elrichardby11/VivaControl-Web/assets/76932746/125a68bf-56ac-4ff6-ab91-69fe1b3fc53e)
+

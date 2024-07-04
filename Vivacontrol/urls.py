@@ -22,5 +22,10 @@ from Vivacontrol import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name="home"),
+    path('sobre-nosotros/', views.nosotros, name='nosotros'),
+    path('contacto/', views.contacto, name='contacto'),
     path('inventario/', include('inventario.urls')),
+    path('register/', views.register, name='register'),
+    path('login/', views.login, name='login'),
+    path('logout', views.logout, name='logout'),
 ]

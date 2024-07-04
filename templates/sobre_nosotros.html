@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="container mt-5">
+    <h2>Sobre Nosotros</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <p>
+                Viva Control es una aplicación de control de inventarios y gestión empresarial, diseñada para facilitar
+                y
+                optimizar las operaciones diarias de negocios de diversos tamaños. Fundada en 2024, nuestra misión es
+                proporcionar herramientas intuitivas y efectivas que permitan a nuestros usuarios manejar sus
+                inventarios,
+                realizar ventas y compras, y gestionar sus locales de manera eficiente.
+            </p>
+            <p>
+                Nos enorgullecemos de ofrecer una plataforma innovadora que se adapta a las necesidades cambiantes del
+                mercado,
+                ayudando a las empresas a crecer y prosperar. Nuestra dedicación a la calidad y el servicio al cliente
+                nos
+                distingue en la industria, y estamos comprometidos a mejorar continuamente nuestros productos y
+                servicios.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/edificio.jpg' %}" class="img-fluid" alt="Nuestra empresa">
+        </div>
+    </div>
+
+    <h3 class="mt-5">Nuestra Historia</h3>
+    <p>
+        Desde nuestros humildes comienzos en 2023, hemos crecido y evolucionado para convertirnos en una solución líder
+        en
+        el control de inventarios. Cada año, añadimos nuevas características y mejoras, siempre escuchando las
+        necesidades
+        de nuestros clientes y adaptándonos a los cambios del mercado.
+    </p>
+    <p>
+        Estamos agradecidos por el apoyo de nuestra comunidad y estamos comprometidos a seguir innovando para ayudar a
+        las
+        empresas a alcanzar su máximo potencial.
+    </p>
+    <br><br>
+</div>
+
+{% endblock content %}

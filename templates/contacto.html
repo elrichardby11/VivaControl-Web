@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Contacto</h2>
+    <form>
+        <div class="mb-3">
+            <label for="rutEmpresa" class="form-label">Rut Empresa *</label>
+            <input type="text" class="form-control" id="rutEmpresa" placeholder="00.000.000-0" required>
+        </div>
+        <div class="mb-3">
+            <label for="empresa" class="form-label">Empresa *</label>
+            <input type="text" class="form-control" id="empresa" placeholder="Nombre de la empresa" required>
+        </div>
+        <div class="mb-3">
+            <label for="personaContacto" class="form-label">Persona de Contacto *</label>
+            <input type="text" class="form-control" id="personaContacto" placeholder="Nombre de la persona de contacto"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono *</label>
+            <input type="tel" class="form-control" id="telefono" placeholder="+56 9 1234 5678" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="email" placeholder="minombre@vivacontrol.cl" required>
+        </div>
+        <div class="mb-3">
+            <label for="comentarios" class="form-label">Comentarios *</label>
+            <textarea class="form-control" id="comentarios" rows="3" placeholder="Escribe tus comentarios aquí"
+                required></textarea>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="terminos" required>
+            <label class="form-check-label" for="terminos">Acepto los términos y Condiciones. <a href="#"
+                    class="link-primary">Leer Cláusula</a></label>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+    <br><br>
+</div>
+
+{% endblock content %}

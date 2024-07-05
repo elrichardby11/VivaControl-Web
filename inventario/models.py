@@ -34,7 +34,7 @@ class Movimiento(models.Model):
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.CASCADE)
     cstate_movimiento = models.ForeignKey(CStateMovimiento, on_delete=models.CASCADE)
     auxiliar = models.ForeignKey(Auxiliar, on_delete=models.CASCADE)  # Usando el modelo Auxiliar
-    precio_total = models.IntegerField()
+    precio_total = models.IntegerField(blank=True, null=True)
     coste_total = models.IntegerField()
     pago = models.ForeignKey(PagoMovimiento, on_delete=models.CASCADE)  # Usando el modelo PagoMovimiento
 

@@ -6,6 +6,91 @@ Inventario - Viva Control
 
 {% block content %}
 
-<h1>Inventario</h1>
+<div class="container mt-5">
+    <h1>Inventario</h1>
+    <br>
+    <div class="form-group">
+        <label for="search">Buscar</label>
+        <input type="text" class="form-control" id="search" placeholder="Buscar">
+    </div>
+    <div class="form-row mb-3">
+        <div class="col">
+            <label for="tipo">Tipo:</label>
+            <select class="form-control" id="tipo">
+                <option>Compra</option>
+                <!-- todo: conectar tipos de movimientos -->
+            </select>
+        </div>
+        <div class="col">
+            <label for="estado">Estado:</label>
+            <select class="form-control" id="estado">
+                <option>Activo</option>
+                <!-- todo: conectar estados de movimientos -->
+            </select>
+        </div>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Costo Total</th>
+                <th>Precio Total</th>
+                <th>AUX RUT</th>
+                <th>ID Pago</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inventario in page_obj %}
+            <tr>
+                <td>{{ inventario.id }}</td>
+                <td>{{ inventario.fecha }}</td>
+                <td>{{ inventario.coste_total }}</td>
+                <td>{{ inventario.precio_total }}</td>
+                <td>{{ inventario.auxiliar.rut_auxiliar }}-{{inventario.auxiliar.dv}}</td>
+                <td>{{ inventario.pago }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <button class="btn btn-primary">Ver Detalle</button>
+</div>
+<br>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 {% endblock content %}

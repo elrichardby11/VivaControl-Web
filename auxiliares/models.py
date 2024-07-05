@@ -28,7 +28,7 @@ class Comuna(models.Model):
 
 class Auxiliar(models.Model):
     rut_auxiliar = models.IntegerField(primary_key=True)
-    dv = models.IntegerField(max_length=2)
+    dv = models.IntegerField()
     razon_social = models.CharField(max_length=50, blank=True)
     direccion = models.CharField(max_length=50)
     sitio_web = models.URLField(max_length=50, blank=True)
@@ -43,7 +43,7 @@ class Auxiliar(models.Model):
 
 class ContactoAuxiliar(models.Model):
     rut_auxiliar = models.ForeignKey(Auxiliar, on_delete=models.CASCADE)
-    dv = models.IntegerField(max_length=2)
+    dv = models.IntegerField()
     nombres = models.CharField(max_length=50)
     apellidos = models.CharField(max_length=50)
     correo = models.EmailField(max_length=50, blank=True)

@@ -6,29 +6,45 @@ Inventario - Viva Control
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-4">
     <h1>Inventario</h1>
     <br>
-    <div class="form-group">
-        <label for="search">Buscar</label>
-        <input type="text" class="form-control" id="search" placeholder="Buscar">
-    </div>
-    <div class="form-row mb-3">
-        <div class="col">
-            <label for="tipo">Tipo:</label>
-            <select class="form-control" id="tipo">
-                <option>Compra</option>
-                <!-- todo: conectar tipos de movimientos -->
-            </select>
+    <form method="GET" action="{% url 'inventario' %}">
+        <div class="row g-2">
+            <div class="col-md">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="search" name="search" placeholder="12345678" value="{{ search_query }}">
+                    <label for="search">Buscar RUT</label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-floating">
+                    <select class="form-select" id="tipo" name="tipo" aria-label="Floating label select example">
+                        <option value="">Seleccione Tipo</option>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.id }}" {% if tipo_query == tipo.id|stringformat:"s" %}selected{% endif %}>{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="tipo">Tipo:</label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-floating">
+                    <select class="form-select" id="estado" name="estado" aria-label="Floating label select example">
+                        <option value="">Seleccione Estado</option>
+                        {% for estado in estados %}
+                        <option value="{{ estado.id }}" {% if estado_query == estado.id|stringformat:"s" %}selected{% endif %}>{{ estado.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="estado">Estado:</label>
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <label for="estado">Estado:</label>
-            <select class="form-control" id="estado">
-                <option>Activo</option>
-                <!-- todo: conectar estados de movimientos -->
-            </select>
+        <div class="form-group mt-3">
+            <button class="btn btn-success" type="submit">Buscar</button>
         </div>
-    </div>
+    </form>
+    <br>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -36,8 +52,9 @@ Inventario - Viva Control
                 <th>Fecha</th>
                 <th>Costo Total</th>
                 <th>Precio Total</th>
-                <th>AUX RUT</th>
+                <th>RUT Auxiliar</th>
                 <th>ID Pago</th>
+                <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
@@ -47,8 +64,9 @@ Inventario - Viva Control
                 <td>{{ inventario.fecha }}</td>
                 <td>{{ inventario.coste_total }}</td>
                 <td>{{ inventario.precio_total }}</td>
-                <td>{{ inventario.auxiliar.rut_auxiliar }}-{{inventario.auxiliar.dv}}</td>
+                <td>{{ inventario.auxiliar.rut_auxiliar }}-{{ inventario.auxiliar.dv }}</td>
                 <td>{{ inventario.pago }}</td>
+                <td> <button class="btn btn-primary">Ver Detalle</button> </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -57,36 +75,35 @@ Inventario - Viva Control
         <ul class="pagination">
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page=1" aria-label="First">
+                <a class="page-link" href="?page=1&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="First">
                     <span aria-hidden="true">&laquo;&laquo;</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             {% endif %}
             {% for num in page_obj.paginator.page_range %}
             <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                <a class="page-link" href="?page={{ num }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}">{{ num }}</a>
             </li>
             {% endfor %}
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Last">
                     <span aria-hidden="true">&raquo;&raquo;</span>
                 </a>
             </li>
             {% endif %}
         </ul>
     </nav>
-    <button class="btn btn-primary">Ver Detalle</button>
 </div>
 <br>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

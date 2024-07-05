@@ -49,4 +49,5 @@ python manage.py runserver
 ## Demo 
 
 ![demogif](https://github.com/elrichardby11/VivaControl-Web/assets/76932746/125a68bf-56ac-4ff6-ab91-69fe1b3fc53e)
+![Sobre nosotros - Viva Control](https://github.com/elrichardby11/VivaControl-Web/assets/76932746/a9e6b28d-f88a-44c7-a5f9-88db581550df)
 

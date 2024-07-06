@@ -43,14 +43,13 @@ class Movimiento(models.Model):
     
 class DetalleMovimiento(models.Model):
     movimiento = models.ForeignKey(Movimiento, on_delete=models.CASCADE)
-    id_producto = models.ForeignKey(SucursalProducto, related_name='productos', on_delete=models.CASCADE)
-    id_sucursal = models.ForeignKey(SucursalProducto, related_name='sucursales', on_delete=models.CASCADE)
+    sucursal_producto = models.ForeignKey(SucursalProducto, on_delete=models.CASCADE)
     cantidad = models.IntegerField()
     precio_unitario = models.IntegerField()
     coste_unitario = models.IntegerField()
 
     class Meta:
-        unique_together = (('movimiento', 'id_producto'),)
+        unique_together = (('movimiento', 'sucursal_producto'),)
 
     def __str__(self):
-        return f"Detalle de Movimiento {self.movimiento.id} - Producto {self.id_producto}"
+        return f"Detalle de Movimiento {self.movimiento.id} - Producto {self.sucursal_producto.id_producto}"

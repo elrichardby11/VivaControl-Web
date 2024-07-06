@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalle - Viva Control
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Detalle</h1>
+    <br>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Sucursal</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Coste Unitario</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ detalle.movimiento }}</td>
+                <td>{{ detalle.id_producto.id_producto.id_producto}} <br> {{detalle.id_producto.id_producto }}</td>
+                <td>{{ detalle.id_sucursal.id_sucursal.id_sucursal }} - {{ detalle.id_sucursal.id_sucursal }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario }}</td>
+                <td>{{ detalle.coste_unitario }}</td>
+                <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<br>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock content %}

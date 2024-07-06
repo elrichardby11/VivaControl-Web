@@ -38,10 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auxiliares',
-    'inventario',
-    'productos',
-    'administrador',
+    'auxiliares.apps.AuxiliaresConfig',
+    'inventario.apps.InventarioConfig',
+    'productos.apps.ProductosConfig',
+    'administrador.apps.AdministradorConfig',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +125,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'Vivacontrol/static'),]
 
 LOGIN_URL = 'login'
+#SESSION_COOKIE_AGE = 5*60
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

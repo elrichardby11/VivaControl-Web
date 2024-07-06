@@ -23,6 +23,6 @@ class MovimientoAdmin(admin.ModelAdmin):
 admin.site.register(Movimiento, MovimientoAdmin)
 
 class DetalleMovimientoAdmin(admin.ModelAdmin):
-    list_display = ("movimiento", "id_producto", "id_sucursal", "cantidad", )
+    list_display = ("movimiento", "sucursal_producto", "cantidad", "precio_unitario", "coste_unitario")
 
 admin.site.register(DetalleMovimiento, DetalleMovimientoAdmin)

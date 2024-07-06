@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import CStateMovimiento, Movimiento, TipoMovimiento
+from .models import CStateMovimiento, DetalleMovimiento, Movimiento, TipoMovimiento
 from django.core.paginator import Paginator             
 
 @login_required
@@ -22,7 +22,7 @@ def inventario_list(request):
     if estado_query:
         movimientos = movimientos.filter(cstate_movimiento = estado_query)
     
-    paginator = Paginator(movimientos, 5)  # Mostrar 5 elementos por página
+    paginator = Paginator(movimientos, 10)  # Mostrar 5 elementos por página
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -39,3 +39,10 @@ def inventario_list(request):
     }
 
     return render(request, 'inventario.html', context)
+
+@login_required
+def detalle_list(request, id):
+    detalle = DetalleMovimiento.objects.get(movimiento=id)
+
+    return render(request, 'detalle.html', context={"detalle": detalle})
+

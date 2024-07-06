@@ -66,7 +66,7 @@ Inventario - Viva Control
                 <td>{{ inventario.precio_total }}</td>
                 <td>{{ inventario.auxiliar.rut_auxiliar }}-{{ inventario.auxiliar.dv }}</td>
                 <td>{{ inventario.pago }}</td>
-                <td> <button class="btn btn-primary">Ver Detalle</button> </td>
+                <td class="text-center"><a href="detalle/{{ inventario.id }}" class="btn btn-dark btn-md">Ver Detalle</a> </td>
             </tr>
             {% endfor %}
         </tbody>

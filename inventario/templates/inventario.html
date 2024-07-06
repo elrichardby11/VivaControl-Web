@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Inventario - Viva Control
+row - Viva Control
 {% endblock %}
 
 {% block content %}
@@ -14,29 +14,18 @@ Inventario - Viva Control
             <div class="col-md">
                 <div class="form-floating">
                     <input type="text" class="form-control" id="search" name="search" placeholder="12345678" value="{{ search_query }}">
-                    <label for="search">Buscar RUT</label>
+                    <label for="search">Buscar Producto (código barras)</label>
                 </div>
             </div>
             <div class="col-md">
                 <div class="form-floating">
-                    <select class="form-select" id="tipo" name="tipo" aria-label="Floating label select example">
-                        <option value="">Seleccione Tipo</option>
-                        {% for tipo in tipos %}
-                        <option value="{{ tipo.id }}" {% if tipo_query == tipo.id|stringformat:"s" %}selected{% endif %}>{{ tipo.nombre }}</option>
+                    <select class="form-select" id="local" name="local" aria-label="Floating label select example">
+                        <option value="">Seleccione Local</option>
+                        {% for local in locales %}
+                        <option value="{{ local.id_sucursal }}" {% if local_query == local.id_sucursal|stringformat:"s" %}selected{% endif %}>{{ local.id_sucursal }} - {{ local.direccion }}</option>
                         {% endfor %}
                     </select>
-                    <label for="tipo">Tipo:</label>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="form-floating">
-                    <select class="form-select" id="estado" name="estado" aria-label="Floating label select example">
-                        <option value="">Seleccione Estado</option>
-                        {% for estado in estados %}
-                        <option value="{{ estado.id }}" {% if estado_query == estado.id|stringformat:"s" %}selected{% endif %}>{{ estado.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="estado">Estado:</label>
+                    <label for="local">Local:</label>
                 </div>
             </div>
         </div>
@@ -48,25 +37,19 @@ Inventario - Viva Control
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Costo Total</th>
-                <th>Precio Total</th>
-                <th>RUT Auxiliar</th>
-                <th>ID Pago</th>
+                <th>Código de Barras</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
                 <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for inventario in page_obj %}
+            {% for row in page_obj %}
             <tr>
-                <td>{{ inventario.id }}</td>
-                <td>{{ inventario.fecha }}</td>
-                <td>{{ inventario.coste_total }}</td>
-                <td>{{ inventario.precio_total }}</td>
-                <td>{{ inventario.auxiliar.rut_auxiliar }}-{{ inventario.auxiliar.dv }}</td>
-                <td>{{ inventario.pago }}</td>
-                <td class="text-center"><a href="detalle/{{ inventario.id }}" class="btn btn-dark btn-md">Ver Detalle</a> </td>
+                <td>{{ row.id_producto.id_producto }}</td>
+                <td>{{ row.id_producto.nombre }}</td>
+                <td>{{ row.cantidad }}</td>
+                <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
             </tr>
             {% endfor %}
         </tbody>

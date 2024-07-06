@@ -1,8 +1,8 @@
 from django.db import models
 
-from administrador.models import MetodosPago
+from administrador.models import MetodosPago, Sucursal
 from auxiliares.models import Auxiliar
-from productos.models import SucursalProducto
+from productos.models import Producto
 
 class CStateMovimiento(models.Model):
     nombre = models.CharField(max_length=50)
@@ -40,7 +40,19 @@ class Movimiento(models.Model):
 
     def __str__(self):
         return f"Movimiento {self.id}"
-    
+
+class SucursalProducto(models.Model):
+    id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+    precio = models.IntegerField()
+
+    class Meta:
+        unique_together = (('id_sucursal', 'id_producto'),)
+
+    def __str__(self):
+        return f"Producto {self.id_producto} en Sucursal {self.id_sucursal}"
+
 class DetalleMovimiento(models.Model):
     movimiento = models.ForeignKey(Movimiento, on_delete=models.CASCADE)
     sucursal_producto = models.ForeignKey(SucursalProducto, on_delete=models.CASCADE)

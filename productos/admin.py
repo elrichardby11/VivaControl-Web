@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from productos.models import CStateProducto, Categoria, Producto, SucursalProducto
+from productos.models import CStateProducto, Categoria, Producto
 
 class CStateProductoAdmin(admin.ModelAdmin):
     list_display = ("id", "nombre", )
@@ -16,9 +16,3 @@ class ProductoAdmin(admin.ModelAdmin):
     list_display = ("id_producto", "nombre", "categoria", )
 
 admin.site.register(Producto, ProductoAdmin)
-
-class SucursalProductoAdmin(admin.ModelAdmin):
-    list_display = ("id_sucursal", "id_producto", "cantidad", )
-
-admin.site.register(SucursalProducto, SucursalProductoAdmin)
-

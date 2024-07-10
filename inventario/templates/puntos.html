@@ -1,0 +1,47 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Inicio - Viva Control
+{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-4">
+        <h1>Seleccione punto: </h1>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <a href="{% url 'punto_venta' %}" class="card-link">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Punto de Venta</h5>
+                            <p class="card-text">Salida de los productos mediante ventas que realizan los clientes.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'punto_compra' %}" class="card-link">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Punto de Compra</h5>
+                            <p class="card-text">Entrada de Productos mediante compras a proveedores.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'punto_otros' %}" class="card-link">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Punto de Salida General</h5>
+                            <p class="card-text">Puede ser Merma, Extravio, Consumo Intero u Otro.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <br><br>
+{% endblock content %}

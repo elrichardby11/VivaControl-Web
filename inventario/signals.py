@@ -18,7 +18,7 @@ def actualizar_stock(sender, instance, created, **kwargs):
         
         sucursal_producto.save()
 
-""" @receiver(pre_delete, sender=DetalleMovimiento)
+@receiver(pre_delete, sender=DetalleMovimiento)
 def revertir_stock(sender, instance, **kwargs):
     id_tipo_movimiento = instance.movimiento.tipo_movimiento.id
 
@@ -29,8 +29,7 @@ def revertir_stock(sender, instance, **kwargs):
     elif id_tipo_movimiento in [2, 3, 4, 5]:  # Venta
         sucursal_producto.cantidad += instance.cantidad
     
-    sucursal_producto.save() """
-
+    sucursal_producto.save()
 
 @receiver(post_migrate)
 def cargar_datos_por_defecto(sender, **kwargs):

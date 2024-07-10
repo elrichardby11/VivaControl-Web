@@ -1,0 +1,35 @@
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.navbar-custom {
+  background-color: #eae9e7;
+  /* Color claro que combina con el logo */
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: #343a40;
+  /* Color oscuro del logo */
+}
+
+.footer-custom {
+  background-color: #eae9e7;
+  /* Color claro que combina con el logo */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.footer-custom .footer-brand,
+.footer-custom .footer-link {
+  color: #343a40;
+  /* Color oscuro del logo */
+}
+
+.footer-custom .footer-link:hover {
+  text-decoration: underline;
+}
+
+.content-wrap {
+  margin-bottom: 100px;
+}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-row - Viva Control
+Inventario - Viva Control
 {% endblock %}
 
 {% block content %}
@@ -40,6 +40,7 @@ row - Viva Control
                 <th>Código de Barras</th>
                 <th>Nombre</th>
                 <th>Cantidad</th>
+                <th>Precio Venta</th>
                 <th>Opciones</th>
             </tr>
         </thead>
@@ -49,6 +50,7 @@ row - Viva Control
                 <td>{{ row.id_producto.id_producto }}</td>
                 <td>{{ row.id_producto.nombre }}</td>
                 <td>{{ row.cantidad }}</td>
+                <td>{{ row.precio }}</td>
                 <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
             </tr>
             {% endfor %}

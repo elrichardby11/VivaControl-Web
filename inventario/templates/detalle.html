@@ -22,6 +22,8 @@ Detalle - Viva Control
             </tr>
         </thead>
         <tbody>
+            {% for detalle in detalles %}
+
             <tr>
                 <td>{{ detalle.movimiento }}</td>
                 <td>{{ detalle.sucursal_producto.id_producto.id_producto}} <br> {{detalle.sucursal_producto.id_producto }}</td>
@@ -31,6 +33,10 @@ Detalle - Viva Control
                 <td>{{ detalle.coste_unitario }}</td>
                 <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
             </tr>
+                        
+            {% endfor %}
+
+
         </tbody>
     </table>
 </div>

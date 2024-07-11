@@ -8,7 +8,7 @@ Punto de Venta - Viva Control
 
 <div class="container mt-4">
     <h1>Punto de Venta</h1>
-    
+    <br>
     <!-- Mensajes de éxito y error -->
     {% if messages %}
         {% for message in messages %}
@@ -25,7 +25,6 @@ Punto de Venta - Viva Control
         {% endfor %}
     {% endif %}
 
-    <br>
     <form method="GET" action="{% url 'punto_venta' %}" id="product-form">
         <div class="row g-2">
             <div class="col-md">

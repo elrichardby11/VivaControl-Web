@@ -89,34 +89,35 @@ def punto_venta(request):
     
     # Inicializar el carrito si no existe
     if 'cart' not in request.session:
-        request.session['cart'] = {}
+        request.session['cart'] = {} 
+
+    if ('local_query' not in request.session) or (request.session['cart'] == {}):
+        request.session['local_query'] = ''
 
     cart = request.session['cart']
-    local_query = request.GET.get('local', '')
-    code_query = request.GET.get('codigo_barras', '')
+    local_query = request.session['local_query']
 
     context = {
         "locales": locales,
         "metodos": metodos,
         "cart": cart,
         "local_query": local_query,
-        "codigo_barras": code_query
+        "codigo_barras": request.GET.get('codigo_barras', '')
     }
 
     if request.method == "GET":
         # Capturando los parámetros de la petición
-        # code_query = request.GET.get('codigo_barras', '')
-        # local_query = request.GET.get('local', '')
+        code_query = request.GET.get('codigo_barras', '')
 
         if 'codigo_barras' in request.GET or 'local' in request.GET:
 
-            # context.update({
-            #     "local_query": local_query,
-            #     "codigo_barras": code_query
-            # })
+            new_local_query = request.GET.get('local', '')
 
-            if not local_query:
+            if not new_local_query:
                 messages.error(request, "Debe seleccionar un local primero.")
+                return render(request, 'punto_venta.html', context)
+            if cart and local_query and new_local_query != local_query:
+                messages.error(request, "No se puede cambiar de local con productos en el carrito.")
                 return render(request, 'punto_venta.html', context)
             if not code_query:
                 messages.error(request, "Debe de añadir el código de barras.")
@@ -125,7 +126,10 @@ def punto_venta(request):
                 messages.error(request, "Debe de añadir un código de barras válido.")
                 return render(request, 'punto_venta.html', context)
 
-            products = SucursalProducto.objects.filter(id_sucursal=local_query)
+            # Actualizar local query de la sesion
+            request.session['local_query'] = new_local_query
+
+            products = SucursalProducto.objects.filter(id_sucursal=new_local_query)
             product = products.filter(id_producto=code_query).first()
 
             if not product:
@@ -148,6 +152,12 @@ def punto_venta(request):
                 }
 
             request.session['cart'] = cart
+            request.session['local_query'] = new_local_query
+            context.update({
+                "local_query": new_local_query,
+                "codigo_barras": code_query
+            })
+
             messages.success(request, f"Producto encontrado: {product.id_producto.nombre}. Cantidad disponible: {quantity}.")
 
     return render(request, 'punto_venta.html', context)
@@ -168,6 +178,9 @@ def eliminar_producto_carrito(request, code, local_query):
     else:
         messages.success(request, "el producto no se encuentra en el carrito.")
 
+    if cart == {}:
+        local_query = ''
+
     # Pasar los datos necesarios al contexto
     locales = Sucursal.objects.all()
     metodos = MetodosPago.objects.all()
@@ -180,3 +193,6 @@ def eliminar_producto_carrito(request, code, local_query):
     }
 
     return render(request, 'punto_venta.html', context)
+
+def clear_cart():
+    pass

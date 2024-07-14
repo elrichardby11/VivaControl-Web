@@ -39,6 +39,7 @@ Inventario - Viva Control
             <tr>
                 <th>Código de Barras</th>
                 <th>Nombre</th>
+                <th>Local</th>
                 <th>Cantidad</th>
                 <th>Precio Venta</th>
                 <th>Opciones</th>
@@ -49,6 +50,7 @@ Inventario - Viva Control
             <tr>
                 <td>{{ row.id_producto.id_producto }}</td>
                 <td>{{ row.id_producto.nombre }}</td>
+                <td>{{ row.id_sucursal.id_sucursal }} - {{ row.id_sucursal }}</td>
                 <td>{{ row.cantidad }}</td>
                 <td>{{ row.precio }}</td>
                 <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>

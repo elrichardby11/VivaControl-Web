@@ -5,7 +5,55 @@ Inicio - Viva Control
 {% endblock %}
 
 {% block content %}
+{% if not user.is_authenticated %}
 
 <h1>Bienvenido!</h1>
+{% else %}
+{% load static %}
+
+<div class="container mt-4">
+    <h1>Acceso Directo: </h1>
+    <br>
+    <h2>Inventario: </h2>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'punto_venta' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/pos_icon.png' %}" alt="pos image" width="250">
+                        <h5 class="card-title">Punto de Venta</h5>
+                        <p class="card-text">Salida de los productos mediante ventas que realizan los clientes.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'punto_compra' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/supplier.png' %}" alt="supplier image" width="225">
+                        <h5 class="card-title">Punto de Compra</h5>
+                        <p class="card-text">Entrada de Productos mediante compras a proveedores.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'inventario' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/inventory.jpg' %}" alt="inventory image" width="197">
+                        <h5 class="card-title"><br>Inventario</h5>
+                        <p class="card-text">Revisa el stock de los productos por locales.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<br><br>
+
+
+{% endif %}
 
 {% endblock content %}

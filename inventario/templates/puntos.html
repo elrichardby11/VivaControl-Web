@@ -7,41 +7,45 @@ Inicio - Viva Control
 
 {% block content %}
 
-    <div class="container mt-4">
-        <h1>Seleccione punto: </h1>
-        <br>
-        <div class="row">
-            <div class="col-md-4">
-                <a href="{% url 'punto_venta' %}" class="card-link">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Punto de Venta</h5>
-                            <p class="card-text">Salida de los productos mediante ventas que realizan los clientes.</p>
-                        </div>
+{% load static %}
+
+<div class="container mt-4">
+    <h1>Seleccione punto: </h1><br>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'punto_venta' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/pos_icon.png' %}" alt="pos image" width="250">
+                        <h5 class="card-title">Punto de Venta</h5>
+                        <p class="card-text">Salida de los productos mediante ventas que realizan los clientes.</p>
                     </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="{% url 'punto_compra' %}" class="card-link">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Punto de Compra</h5>
-                            <p class="card-text">Entrada de Productos mediante compras a proveedores.</p>
-                        </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'punto_compra' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/supplier.png' %}" alt="supplier image" width="225">
+                        <h5 class="card-title">Punto de Compra</h5>
+                        <p class="card-text">Entrada de Productos mediante compras a proveedores.</p>
                     </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="{% url 'punto_otros' %}" class="card-link">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Punto de Salida General</h5>
-                            <p class="card-text">Puede ser Merma, Extravio, Consumo Intero u Otro.</p>
-                        </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'punto_otros' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{% static 'images/other.png' %}" alt="supplier image" width="200">
+                        <h5 class="card-title"><br>Punto de Salida General</h5>
+                        <p class="card-text">Puede ser Merma, Extravio, Consumo Intero u Otro.</p>
                     </div>
-                </a>
-            </div>
+                </div>
+            </a>
         </div>
     </div>
-    <br><br>
+</div>
+<br><br>
 {% endblock content %}

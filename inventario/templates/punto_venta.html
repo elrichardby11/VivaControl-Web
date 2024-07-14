@@ -69,11 +69,11 @@ Punto de Venta - Viva Control
                             <td>{{ item.name }}</td>
                             <td>{{ item.price }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td>{% widthratio item.quantity 1 item.price %}</td>
+                            <td>{{ item.total }}</td>
                             <td class="text-center">
                                 <a href="" class="btn btn-dark btn-sm">Ver Producto</a>
                                 <a href="" class="btn btn-primary btn-sm">Editar</a>
-                                <a href="{% url 'eliminar_p_carrito' code local_query|default:"0" %}" class="btn btn-danger btn-sm">Eliminar</a></td>
+                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -81,6 +81,10 @@ Punto de Venta - Viva Control
             </div>
         </div>
         <div class="col-md-2">
+            <div class="form-floating mb-3">
+                
+                <h5>Total: {{total_price}}</h5>
+            </div>
             <div class="form-floating mb-3">
                 <select class="form-select" id="metodo_pago" name="metodo_pago" aria-label="Floating label select example">
                     <option value="">Seleccione Método de Pago</option>
@@ -91,6 +95,7 @@ Punto de Venta - Viva Control
                 <label for="metodo_pago">Método de Pago:</label>
             </div>
         </div>
+
     </div>
 </div>
 <br>

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Comunas - Viva Control
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+
+   
+        <div class="col-md-4">
+            <h3>Comunas</h3>
+            <form action="guardar_comunas/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa Nombre de la Comuna">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+
+                {% if messages %}
+                {% for message in messages %}
+                    {%if message.tags == 'error'%}
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    {% else %} 
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    {% endif %}
+                    <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                {% endfor %}
+            {% endif %}
+            </form>
+        </div>
+
+  
+        <div class="col-md-8">
+            <h3>Listado de Comunas</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comuna in comunas %}
+                        <tr>
+                            <td>{{ comuna.id}}</td>
+                            <td>{{ comuna.nombre }}</td>
+                            <td class="">
+                                <a href="editar_comuna/{{ comuna.id}}" class="btn btn-primary btn-sm">Editar</a>
+                                <a href="eliminar_comuna/{{ comuna.id}}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar Auxiliar - Viva Control
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container mt-5 mb-3">
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-8 col-lg-6">
+            <h2>Editar Auxiliar</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="txtRut">Rut (sin DV) *</label>
+                            <input type="text" class="form-control" id="txtRut" name="txtRut" placeholder="10123456" value="{{ auxiliar.rut_auxiliar }}"required>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtDV">Dígito Verificador (DV)</label>
+                            <input type="text" class="form-control" id="txtDV" name="txtDV" value="{{ auxiliar.dv }}" readonly>
+                        </div>                
+                        <div class="form-group">
+                            <label for="txtRazonSocial">Razón Social (si corresponde)</label>
+                            <input type="text" class="form-control" id="txtRazonSocial" name="txtRazonSocial" placeholder="Si es empresa ingresa razon social" value="{{ auxiliar.razon_social }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtDireccion">Direccion *</label>
+                            <input type="text" class="form-control" id="txtDireccion" name="txtDireccion" placeholder="Ingresa direccion" value="{{ auxiliar.direccion }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtSitioWeb">Sitio Web</label>
+                            <input type="url" class="form-control" id="txtSitioWeb" name="txtSitioWeb" placeholder="Ingresa sitio web" value="{{ auxiliar.sitio_web }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtFecha">Fecha de Inicio de Acuerdo *</label>
+                            <input type="date" class="form-control" id="txtFecha" name="txtFecha" required value="{{ auxiliar.fecha_inicio_acuerdo|date:'Y-m-d' }}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtNumero">Teléfono</label>
+                            <input type="tel" class="form-control" id="txtNumero" name="txtNumero" placeholder="Ingresa teléfono principal" value="{{ auxiliar.telefono }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtActivo">Activo *</label>
+                            <input type="checkbox" checked="checked" id="txtActivo" name="txtActivo" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo_auxiliar">Tipo Auxiliar</label>
+                            <select class="form-control" id="tipo_auxiliar" name="tipo_auxiliar" required>
+                                {% for tipo in tipos %}
+                                <option value="{{ tipo.id }}" {% if auxiliar.tipo_auxiliar.id == tipo.id %} selected {% endif %}> {{ tipo.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="comunas">Comunas</label>
+                            <select class="form-control" id="comunas" name="comunas" required>
+                                {% for comuna in comunas %}
+                                <option value="{{ comuna.id }}" {% if auxiliar.comuna.id == comuna.id %} selected {% endif %}> {{ comuna.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                        {% if messages %}
+                        {% for message in messages %}
+                            {%if message.tags == 'error'%}
+                            <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                            {% else %} 
+                            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                            {% endif %}
+                            <strong>{{ message }}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

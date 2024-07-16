@@ -1,0 +1,159 @@
+<!-- Menú de Navegación -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+
+    
+        <div class="col-md-4">
+            <h2>Agregar Auxiliar</h2>
+            <form action="{% url 'registrar_auxiliar' %} " method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="txtRut">Rut (sin DV) *</label>
+                    <input type="text" class="form-control" id="txtRut" name="txtRut" placeholder="10123456" required>
+                </div>
+                <div class="form-group">
+                    <label for="txtDV">Dígito Verificador (DV)</label>
+                    <input type="text" class="form-control" id="txtDV" name="txtDV" readonly>
+                </div>                
+                <div class="form-group">
+                    <label for="txtRazonSocial">Razón Social (si corresponde)</label>
+                    <input type="text" class="form-control" id="txtRazonSocial" name="txtRazonSocial" placeholder="Si es empresa ingresa razon social">
+                </div>
+                <div class="form-group">
+                    <label for="txtDireccion">Direccion *</label>
+                    <input type="text" class="form-control" id="txtDireccion" name="txtDireccion" placeholder="Ingresa direccion" required>
+                </div>
+                <div class="form-group">
+                    <label for="txtSitioWeb">Sitio Web</label>
+                    <input type="url" class="form-control" id="txtSitioWeb" name="txtSitioWeb" placeholder="Ingresa sitio web">
+                </div>
+                <div class="form-group">
+                    <label for="txtFecha">Fecha de Inicio de Acuerdo *</label>
+                    <input type="date" class="form-control" id="txtFecha" name="txtFecha" required value="2024-01-01"/>
+                </div>
+                <div class="form-group">
+                    <label for="txtNumero">Teléfono</label>
+                    <input type="tel" class="form-control" id="txtNumero" name="txtNumero" placeholder="Ingresa teléfono principal">
+                </div>
+                <div class="form-group">
+                    <label for="txtActivo">Activo *</label>
+                    <input type="checkbox" checked="checked" id="txtActivo" name="txtActivo" required/>
+                </div>
+                <div class="form-group">
+                    <label for="tipo_auxiliar">Tipo Auxiliar</label>
+                    <select class="form-control" id="tipo_auxiliar" name="tipo_auxiliar" required>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comunas">Comunas</label>
+                    <select class="form-control" id="comunas" name="comunas" required>
+                        {% for comuna in comunas %}
+                        <option value="{{ comuna.id }}">{{ comuna.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                {% if messages %}
+                {% for message in messages %}
+                    {%if message.tags == 'error'%}
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    {% else %} 
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    {% endif %}
+                    <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            </form>
+        </div>
+
+   
+        <div class="col-md-8">
+            <h2>Listado de Auxiliares</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">RUT</th>
+                            <th scope="col">Razón Social</th>
+                            <th scope="col">Dirección</th>
+                            <th scope="col">Sitio Web</th>
+                            <th scope="col">Teléfono</th>
+                            <th scope="col">Activo</th>
+                            <th scope="col">Tipo Auxiliar</th>
+                            <th scope="col">Comuna</th>
+                            <th scope="col">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for auxiliar in auxiliares %}
+                        <tr>
+                            <td>{{ auxiliar.rut_auxiliar }}-{{ auxiliar.dv }}</td>
+                            <td>{{ auxiliar.razon_social }}</td>
+                            <td>{{ auxiliar.direccion }}</td>
+                            <td>{{ auxiliar.sitio_web }}</td>
+                            <td>{{ auxiliar.telefono }}</td>
+                            <td>{{ auxiliar.activo }}</td>
+                            <td>{{ auxiliar.tipo_auxiliar.nombre }}</td>
+                            <td>{{ auxiliar.comuna.nombre }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_auxiliar' auxiliar.rut_auxiliar %}" class="btn btn-primary btn-md">Editar</a>
+                                <a href="{% url 'eliminar_auxiliar' auxiliar.rut_auxiliar %}" class="btn btn-danger btn-md">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function calcularDV(rut) {
+        var rutStr = rut.toString();
+        var numerosAMultiplicar = [3, 2, 7, 6, 5, 4, 3, 2];
+        var suma = 0;
+        for (var i = 0; i < numerosAMultiplicar.length; i++) {
+            suma += parseInt(rutStr.charAt(i)) * numerosAMultiplicar[i];
+        }
+        var dv = 11 - (suma % 11);
+        if (dv == 11) {
+            dv = 0;
+        } else if (dv == 10) {
+            dv = 'K';
+        }
+        return dv;
+    }
+
+    function mostrarDV(dv) {
+        if (dv === 'K' || dv === 0) {
+            return dv;
+        }
+        return dv;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var txtRut = document.getElementById('txtRut');
+        var txtDV = document.getElementById('txtDV');
+
+        txtRut.addEventListener('input', function() {
+            var rut = txtRut.value;
+            if (rut.length == 8) {
+                var dv = calcularDV(rut);
+                txtDV.value = mostrarDV(dv);
+            } else {
+                txtDV.value = ''; // Limpiar el campo DV si el RUT no tiene 8 dígitos
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

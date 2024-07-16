@@ -33,21 +33,25 @@
             <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
             {% else %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" aria-haspopup="true"
+              <a class="nav-link dropdown-toggle" href="{% url 'auxiliares'%}" role="button" id="navbarDropdown" aria-haspopup="true"
                 aria-expanded="false">Auxiliares</a>
               <ul class="dropdown-menu">
                 <li>
                   <a class="dropdown-item" href="#" aria-disabled="true">Contactos</a>
                 </li>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'tipos'%}" aria-disabled="true">Tipos</a>
+              </li>
                 <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Cargos</a>
+                  <a class="dropdown-item" href="{% url 'comunas'%}" aria-disabled="true">Comunas</a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="#" aria-disabled="true">Opciones</a>
                 </li>
               </ul>
             </li>
-
+            
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="{% url 'inventario'%}" role="button"
                 aria-expanded="false">Inventario</a>
@@ -173,7 +177,8 @@
         © 2024 Viva Control. Todos los derechos reservados.
       </div>
     </footer>
-
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

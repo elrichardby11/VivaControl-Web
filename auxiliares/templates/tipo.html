@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Tipos - Viva Control
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+
+   
+        <div class="col-md-4">
+            <h3>Tipos de Auxiliares</h3>
+            <form action="guardar_tipos/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresa Nombre">
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion" name="descripcion" placeholder="Ingresa Descripción" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                
+         
+                {% if messages %}
+                {% for message in messages %}
+                    {%if message.tags == 'error'%}
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    {% else %} 
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    {% endif %}
+                    <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            </form>
+        </div>
+
+  
+        <div class="col-md-8">
+            <h3>Listado Tipos de Auxiliares</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tipo in tipos %}
+                        <tr>
+                            <td>{{ tipo.id}}</td>
+                            <td>{{ tipo.nombre }}</td>
+                            <td>{{ tipo.descripcion }}</td>
+                            <td class="">
+                                <a href="editar_tipo/{{ tipo.id}}" class="btn btn-primary btn-sm">Editar</a>
+                                <a href="eliminar_tipo/{{ tipo.id}}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

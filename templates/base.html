@@ -1,184 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
-  {% load static %}
+{% load static %}
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="{% static 'images/logo.webp' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <title>{% block title %} Menú - VivaControl {% endblock %}</title>
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{% static 'images/logo.webp' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <title>{% block title %} Menú - VivaControl {% endblock %}</title>
+</head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-custom">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">
-          {% load static %}
-          <img src="{% static 'images/logo.webp' %}" width="30" height="30" class="d-inline-block align-top"
-            alt="logo" />
-          Viva Control
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+<body>
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        {% load static %}
+        <img src="{% static 'images/logo.webp' %}" width="30" height="30" class="d-inline-block align-top" alt="logo" />
+        Viva Control
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          {% if not user.is_authenticated %}
+          <a class="nav-link" href="{% url 'nosotros' %}">Sobre Nosotros</a>
+          <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
+          {% else %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" aria-haspopup="true"
+              aria-expanded="false">Auxiliares</a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" aria-disabled="true">Contactos</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" aria-disabled="true">Cargos</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" aria-disabled="true">Opciones</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="{% url 'inventario'%}" role="button"
+              aria-expanded="false">Inventario</a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="{% url 'puntos' %}" aria-disabled="true">Puntos de Movimiento</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'movimiento' %}" aria-disabled="true">Movimientos</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" aria-expanded="false">Productos</a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" aria-disabled="true">Categorías</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" aria-disabled="true">Estados</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" aria-haspopup="true" role="button"
+              aria-expanded="false">Administrador</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'sucursales' %}">Locales</a></li>
+              <li><a class="dropdown-item" href="#">Informes</a></li>
+              <li><a class="dropdown-item" href="{% url 'metodos_pago' %}">Métodos de Pago</a></li>
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
+          <span class="navbar-text text-dark">
+            Bienvenido {{ user }}
+          </span>
+          {% endif %}
+
+          {% if not user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'login'%}">Entrar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'register'%}">Registrarse</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'logout' %}">Salir</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- Pie de página -->
+  <footer class="footer-custom text-center text-lg-start">
+    <div class="container p-4">
+      <div class="row">
+        <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+          <h5 class="footer-brand">Viva Control</h5>
+          <p>
+            Aplicación de control de inventarios y gestión empresarial.
+          </p>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+          <h5 class="footer-brand">Enlaces</h5>
+          <ul class="list-unstyled mb-0">
             {% if not user.is_authenticated %}
-            <a class="nav-link" href="{% url 'nosotros' %}">Sobre Nosotros</a>
-            <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
-            {% else %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" aria-haspopup="true"
-                aria-expanded="false">Auxiliares</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Contactos</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Cargos</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Opciones</a>
-                </li>
-              </ul>
+            <li>
+              <a href="{% url 'home' %}" class="footer-link">Inicio</a>
             </li>
-
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="{% url 'inventario'%}" role="button"
-                aria-expanded="false">Inventario</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="{% url 'puntos' %}" aria-disabled="true">Puntos de Movimiento</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'movimiento' %}" aria-disabled="true">Movimientos</a>
-                </li>
-              </ul>
+            <li>
+              <a href="{% url 'contacto' %}" class="footer-link">Contacto</a>
             </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" aria-expanded="false">Productos</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Categorías</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Estados</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" aria-haspopup="true" role="button"
-                aria-expanded="false">Administrador</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Locales</a></li>
-                <li><a class="dropdown-item" href="#">Informes</a></li>
-                <li><a class="dropdown-item" href="{% url 'metodos_pago' %}">Métodos de Pago</a></li>
-              </ul>
-            </li>
-            {% endif %}
-          </ul>
-          <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-            <span class="navbar-text text-dark">
-              Bienvenido {{ user }}
-            </span>
-            {% endif %}
-
-            {% if not user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'login'%}">Entrar</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'register'%}">Registrarse</a>
+            <li>
+              <a href="{% url 'nosotros' %}" class="footer-link">Sobre nosotros</a>
             </li>
             {% else %}
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'logout' %}">Salir</a>
+            <li>
+              <a href="" class="footer-link">Auxiliares</a>
+            </li>
+            <li>
+              <a href="{% url 'inventario' %}" class="footer-link">Inventario</a>
+            </li>
+            <li>
+              <a href="" class="footer-link">Productos</a>
+            </li>
+            <li>
+              <a href="" class="footer-link">Administrador</a>
             </li>
             {% endif %}
           </ul>
         </div>
-      </div>
-    </nav>
 
-    <div class="container-fluid">
-      {% block content %}
-      {% endblock %}
+        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+          <h5 class="footer-brand">Síguenos</h5>
+          <ul class="list-unstyled mb-0">
+            <li>
+              <a href="https://facebook.com" class="footer-link" target="_blank">Facebook</a>
+            </li>
+            <li>
+              <a href="https://twitter.com" class="footer-link" target="_blank">Twitter</a>
+            </li>
+            <li>
+              <a href="https://instagram.com" class="footer-link" target="_blank">Instagram</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- Pie de página -->
-    <footer class="footer-custom text-center text-lg-start">
-      <div class="container p-4">
-        <div class="row">
-          <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
-            <h5 class="footer-brand">Viva Control</h5>
-            <p>
-              Aplicación de control de inventarios y gestión empresarial.
-            </p>
-          </div>
+    <div class="text-center p-3 bg-dark text-white">
+      © 2024 Viva Control. Todos los derechos reservados.
+    </div>
+  </footer>
 
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="footer-brand">Enlaces</h5>
-            <ul class="list-unstyled mb-0">
-              {% if not user.is_authenticated %}
-              <li>
-                <a href="{% url 'home' %}" class="footer-link">Inicio</a>
-              </li>
-              <li>
-                <a href="{% url 'contacto' %}" class="footer-link">Contacto</a>
-              </li>
-              <li>
-                <a href="{% url 'nosotros' %}" class="footer-link">Sobre nosotros</a>
-              </li>
-              {% else %}
-              <li>
-                <a href="" class="footer-link">Auxiliares</a>
-              </li>
-              <li>
-                <a href="{% url 'inventario' %}" class="footer-link">Inventario</a>
-              </li>
-              <li>
-                <a href="" class="footer-link">Productos</a>
-              </li>
-              <li>
-                <a href="" class="footer-link">Administrador</a>
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="footer-brand">Síguenos</h5>
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="https://facebook.com" class="footer-link" target="_blank">Facebook</a>
-              </li>
-              <li>
-                <a href="https://twitter.com" class="footer-link" target="_blank">Twitter</a>
-              </li>
-              <li>
-                <a href="https://instagram.com" class="footer-link" target="_blank">Instagram</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-center p-3 bg-dark text-white">
-        © 2024 Viva Control. Todos los derechos reservados.
-      </div>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    {% block extra_scripts %}
-    {% endblock extra_scripts %}
-  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  {% block extra_scripts %}
+  {% endblock extra_scripts %}
+</body>
 
 </html>

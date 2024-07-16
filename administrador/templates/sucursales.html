@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Comunas - Viva Control
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+
+
+        <div class="col-md-4">
+            <h3>Registrar local</h3>
+            <form action="agregar_sucursal/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_sucursal">ID Sucursal</label>
+                    <input type="text" class="form-control" id="id_sucursal" name="id_sucursal"
+                        placeholder="Ingrese el id de la sucursal">
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Direccion</label>
+                    <input type="text" class="form-control" id="direccion" name="direccion"
+                        placeholder="Ingrese direccion">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comuna</label>
+                    <select class="form-select" aria-label="Comuna" name="Comuna" id="Comuna">
+                        {% for comuna in comunas %}
+                        <option value="{{comuna.id}}">{{comuna.nombre}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+
+                {% if messages %}
+                {% for message in messages %}
+                {%if message.tags == 'error'%}
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    {% else %}
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        {% endif %}
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    {% endfor %}
+                    {% endif %}
+            </form>
+        </div>
+
+
+        <div class="col-md-8">
+            <h3>Listado de locales</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Direccion</th>
+                            <th scope="col">Comuna</th>
+                            <th scope="col">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sucursal in sucursales %}
+                        <tr>
+                            <td>{{ sucursal.id_sucursal}}</td>
+                            <td>{{ sucursal.direccion}}</td>
+                            <td>{{ sucursal.comuna }}</td>
+                            <td class="">
+                                <a href="editar_sucursal/{{sucursal.id_sucursal}}"
+                                    class="btn btn-primary btn-sm">Editar</a>
+                                <a href="eliminar_sucursal/{{sucursal.id_sucursal}}"
+                                    class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

@@ -33,7 +33,7 @@ class Auxiliar(models.Model):
     direccion = models.CharField(max_length=50)
     sitio_web = models.URLField(max_length=50, blank=True)
     fecha_inicio_acuerdo = models.DateField()
-    telefono = models.IntegerField(blank=True)
+    telefono = models.CharField(max_length=12, blank=True)
     activo = models.BooleanField()
     tipo_auxiliar = models.ForeignKey(TipoAuxiliar, on_delete=models.CASCADE)
     comuna = models.ForeignKey(Comuna, on_delete=models.CASCADE)

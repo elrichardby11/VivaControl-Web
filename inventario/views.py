@@ -80,6 +80,42 @@ def inventory_list(request):
 
     return render(request, 'inventario.html', context)
 
+def edit_inventory(request, id_sucursal, id_producto):
+
+    if request.method == "POST":
+        cantidad = request.POST["txtCantidad"]
+        precio = request.POST["txtPrecio"]
+
+        try:
+            inventario = SucursalProducto.objects.get(id_producto=id_producto, id_sucursal=id_sucursal)
+            inventario.cantidad = cantidad
+            inventario.precio = precio
+            
+            inventario.save()
+
+        except Exception as e:
+            messages.error(request, e, "No se ha podido actualizar el inventario")
+        
+        else:
+            messages.success(request, "El inventario se ha actualizado correctamente! ")
+
+        finally:
+            return redirect("inventario")
+
+    inventario = SucursalProducto.objects.get(id_producto=id_producto, id_sucursal=id_sucursal)
+
+    return render(request,
+                  "editar_inventario.html",
+                  context={"inventario": inventario,
+                           })
+
+def delete_inventory(request, id_producto, id_sucursal):
+    inventario = SucursalProducto.objects.get(id_producto=id_producto, id_sucursal=id_sucursal)
+    inventario.delete()
+    messages.success(request, "Inventario eliminado correctamente! ")
+
+    return redirect('inventario')
+
 @login_required
 def puntos(request):
     return render(request, 'puntos.html')

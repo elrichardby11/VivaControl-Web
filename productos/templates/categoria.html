@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+<head>
+    <meta charset="UTF-8">
+    <title>Categorías</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+{% block content %}
+<body>
+    <div class="container">
+        <h1>Categorías</h1>
+        
+        <div class="row">
+            <!-- Columna del formulario para agregar categoría -->
+            <div class="col-md-4">
+                <h2>Añadir Categoría</h2>
+                <form method="post" class="custom-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger">
+                                {% for error in form.nombre.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.descripcion.label_tag }}
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="text-danger">
+                                {% for error in form.descripcion.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </form>
+            </div>
+
+            <!-- Lista de categorías -->
+            <div class="col-md-8">
+                <h2>Lista de Categorías</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria in categorias %}
+                                <tr>
+                                    <td>{{ categoria.id }}</td>
+                                    <td>{{ categoria.nombre }}</td>
+                                    <td>{{ categoria.descripcion }}</td>
+                                    <td>
+                                        <a href="{% url 'categoria_edit' categoria.id %}" class="btn btn-success btn-sm">Editar</a>
+                                        <a href="{% url 'categoria_delete' categoria.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+             
+<div class="container mt-5 mb-3">
+    <h1>Inventario</h1>
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-8 col-lg-6">
+            <h3>Editar Inventario</h3>
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3 form-group">
+                            <label for="id_producto">Código de Barras </label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="id_producto"
+                            name="id_producto"
+                            required
+                            disabled
+                            placeholder="1234567890"
+                            value="{{inventario.id_producto.id_producto}}"
+                            />
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="txtNombre">Nombre </label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="txtNombre"
+                            name="txtNombre"
+                            required
+                            disabled
+                            placeholder="BEBIDA 3L COCA Z"
+                            value="{{inventario.id_producto.nombre}}"
+                            />
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="id_sucursal">Local </label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="id_sucursal"
+                            name="id_sucursal"
+                            required
+                            value="{{inventario.id_sucursal.id_sucursal}}"
+                            disabled
+                            />
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="txtCantidad">Cantidad </label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="txtCantidad"
+                            name="txtCantidad"
+                            required
+                            value="{{inventario.cantidad}}"
+                            />
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="txtPrecio">Precio de Venta </label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="txtPrecio"
+                            name="txtPrecio"
+                            required
+                            value="{{inventario.precio}}"
+                            />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        {% if messages %}
+                        {% for message in messages %}
+                        {%if message.tags == 'error'%}
+                        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                            {% else %} 
+                            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                                {% endif %}
+                                <strong>{{ message }}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+{% endblock content %}

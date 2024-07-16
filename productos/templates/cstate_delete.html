@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Eliminar Estado de Producto - Viva Control
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Eliminar Estado de Producto</h2>
+    <p>¿Estás seguro de que deseas eliminar el estado "{{ estado.nombre }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'cstate_producto' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

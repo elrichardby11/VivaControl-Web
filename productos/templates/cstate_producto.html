@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Estados de Producto - Viva Control
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Estados de Producto</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </form>
+        </div>
+
+        <div class="col-md-8">
+            <h3>Listado de Estados de Producto</h3>
+            <div class="table-responsive">
+                <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estado in estados %}
+                        <tr>
+                            <td>{{ estado.id }}</td>
+                            <td>{{ estado.nombre }}</td>
+                            <td>
+                                <a href="{% url 'cstate_edit' estado.pk %}" class="btn btn-success btn-sm">Editar</a>
+                                <a href="{% url 'cstate_delete' estado.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

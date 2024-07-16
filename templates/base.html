@@ -61,13 +61,13 @@
               </ul>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" aria-expanded="false">Productos</a>
+              <a class="nav-link dropdown-toggle" href="{% url 'productos' %}" role="button" aria-expanded="false">Productos</a>
               <ul class="dropdown-menu">
                 <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Categorías</a>
+                  <a class="dropdown-item" href="{% url 'categorias' %}" aria-disabled="true">Categorías</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Estados</a>
+                  <a class="dropdown-item" href="{% url 'cstate_producto' %}" aria-disabled="true">Estados</a>
                 </li>
               </ul>
             </li>

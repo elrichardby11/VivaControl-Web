@@ -32,14 +32,17 @@
           <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
           {% else %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown" aria-haspopup="true"
+            <a class="nav-link dropdown-toggle" href="{% url 'auxiliares'%}" role="button" id="navbarDropdown" aria-haspopup="true"
               aria-expanded="false">Auxiliares</a>
             <ul class="dropdown-menu">
               <li>
                 <a class="dropdown-item" href="#" aria-disabled="true">Contactos</a>
               </li>
               <li>
-                <a class="dropdown-item" href="#" aria-disabled="true">Cargos</a>
+                <a class="dropdown-item" href="{% url 'tipos'%}" aria-disabled="true">Tipos</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'comunas'%}" aria-disabled="true">Comunas</a>
               </li>
               <li>
                 <a class="dropdown-item" href="#" aria-disabled="true">Opciones</a>
@@ -125,7 +128,6 @@
           <h5 class="footer-brand">Enlaces</h5>
           <ul class="list-unstyled mb-0">
             {% if not user.is_authenticated %}
-<<<<<<< HEAD
             <li>
               <a href="{% url 'home' %}" class="footer-link">Inicio</a>
             </li>
@@ -134,78 +136,6 @@
             </li>
             <li>
               <a href="{% url 'nosotros' %}" class="footer-link">Sobre nosotros</a>
-=======
-            <a class="nav-link" href="{% url 'nosotros' %}">Sobre Nosotros</a>
-            <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
-            {% else %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="{% url 'auxiliares'%}" role="button" id="navbarDropdown" aria-haspopup="true"
-                aria-expanded="false">Auxiliares</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Contactos</a>
-                </li>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'tipos'%}" aria-disabled="true">Tipos</a>
-              </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'comunas'%}" aria-disabled="true">Comunas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" aria-disabled="true">Opciones</a>
-                </li>
-              </ul>
-            </li>
-            
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="{% url 'inventario'%}" role="button"
-                aria-expanded="false">Inventario</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="{% url 'puntos' %}" aria-disabled="true">Puntos de Movimiento</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'movimiento' %}" aria-disabled="true">Movimientos</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="{% url 'productos' %}" role="button" aria-expanded="false">Productos</a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="{% url 'categorias' %}" aria-disabled="true">Categorías</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'cstate_producto' %}" aria-disabled="true">Estados</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" aria-haspopup="true" role="button"
-                aria-expanded="false">Administrador</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Locales</a></li>
-                <li><a class="dropdown-item" href="#">Informes</a></li>
-                <li><a class="dropdown-item" href="{% url 'metodos_pago' %}">Métodos de Pago</a></li>
-              </ul>
-            </li>
-            {% endif %}
-          </ul>
-          <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-            <span class="navbar-text text-dark">
-              Bienvenido {{ user }}
-            </span>
-            {% endif %}
-
-            {% if not user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'login'%}">Entrar</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'register'%}">Registrarse</a>
->>>>>>> 4121ea5bbe1a73f08b0972c11d485826e961cbf9
             </li>
             {% else %}
             <li>
@@ -215,7 +145,7 @@
               <a href="{% url 'inventario' %}" class="footer-link">Inventario</a>
             </li>
             <li>
-              <a href="" class="footer-link">Productos</a>
+              <a href="{% url 'productos' %}" class="footer-link">Productos</a>
             </li>
             <li>
               <a href="" class="footer-link">Administrador</a>
@@ -246,73 +176,11 @@
     </div>
   </footer>
 
-<<<<<<< HEAD
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   {% block extra_scripts %}
   {% endblock extra_scripts %}
 </body>
-=======
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="footer-brand">Enlaces</h5>
-            <ul class="list-unstyled mb-0">
-              {% if not user.is_authenticated %}
-              <li>
-                <a href="{% url 'home' %}" class="footer-link">Inicio</a>
-              </li>
-              <li>
-                <a href="{% url 'contacto' %}" class="footer-link">Contacto</a>
-              </li>
-              <li>
-                <a href="{% url 'nosotros' %}" class="footer-link">Sobre nosotros</a>
-              </li>
-              {% else %}
-              <li>
-                <a href="" class="footer-link">Auxiliares</a>
-              </li>
-              <li>
-                <a href="{% url 'inventario' %}" class="footer-link">Inventario</a>
-              </li>
-              <li>
-                <a href="" class="footer-link">Productos</a>
-              </li>
-              <li>
-                <a href="" class="footer-link">Administrador</a>
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="footer-brand">Síguenos</h5>
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="https://facebook.com" class="footer-link" target="_blank">Facebook</a>
-              </li>
-              <li>
-                <a href="https://twitter.com" class="footer-link" target="_blank">Twitter</a>
-              </li>
-              <li>
-                <a href="https://instagram.com" class="footer-link" target="_blank">Instagram</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-center p-3 bg-dark text-white">
-        © 2024 Viva Control. Todos los derechos reservados.
-      </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    {% block extra_scripts %}
-    {% endblock extra_scripts %}
-  </body>
->>>>>>> 4121ea5bbe1a73f08b0972c11d485826e961cbf9
 
 </html>

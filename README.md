@@ -38,9 +38,17 @@ Una vez activado el entorno virtual, instala las dependencias necesarias:
 pip install -r requirements.txt
 ```
 
-### 4. Ejecuta el Proyecto
+### 4. Ejecuta las migraciones
 
-Ahora estás listo para ejecutar el proyecto. Dependiendo de cómo esté configurado, puedes iniciar la aplicación con:
+Antes de ejecutar el proyecto es necesario crear la base de datos, comando para crear la base de datos:
+
+```bash
+python manage.py migrate
+```
+
+### 5. Ejecuta el Proyecto
+
+Ahora estás listo para ejecutar el proyecto, puedes iniciar la aplicación con:
 
 ```bash
 python manage.py runserver

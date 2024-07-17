@@ -5,24 +5,37 @@ Inicio - Viva Control
 {% endblock %}
 
 {% block content %}
-{% if not user.is_authenticated %}
-
-<h1>Bienvenido!</h1>
-{% else %}
 {% load static %}
+
+{% if not user.is_authenticated %}
+<div class="container mt-4">
+<div class="jumbotron">
+    <h1 class="display-4">¡Bienvenido!</h1>
+    <p class="lead">
+        El proyecto Viva Control está diseñado para atender las necesidades comunes de diversas empresas en la gestión de auxiliares, inventarios y productos. Este sistema ofrece herramientas robustas y flexibles para mejorar la eficiencia operativa y facilitar la toma de decisiones estratégicas.
+    </p>
+    <hr class="my-4">
+    <p>
+        Si deseas acceder a las funcionalidades del sistema, por favor inicia sesión.
+    </p>
+    <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Iniciar sesión</a>
+</div>
+</div>
+{% else %}
 
 <div class="container mt-4">
     <h1>Acceso Directo: </h1>
+
     <br>
     <h2>Inventario: </h2>
     <div class="row">
         <div class="col-md-4">
             <a href="{% url 'punto_venta' %}" class="card-link">
                 <div class="card">
-                    <div class="card-body">
-                        <img src="{% static 'images/pos_icon.png' %}" alt="pos image" width="250">
-                        <h5 class="card-title">Punto de Venta</h5>
-                        <p class="card-text">Salida de los productos mediante ventas que realizan los clientes.</p>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/pos_icon.png' %}" alt="pos image" class="mb-2" width="250">
+                        <h5 class="card-title text-center">Punto de Venta</h5>
+                        <p class="card-text text-center">Salida de los productos mediante ventas que realizan los clientes.</p>
                     </div>
                 </div>
             </a>
@@ -30,10 +43,10 @@ Inicio - Viva Control
         <div class="col-md-4">
             <a href="{% url 'punto_compra' %}" class="card-link">
                 <div class="card">
-                    <div class="card-body">
-                        <img src="{% static 'images/supplier.png' %}" alt="supplier image" width="225">
-                        <h5 class="card-title">Punto de Compra</h5>
-                        <p class="card-text">Entrada de Productos mediante compras a proveedores.</p>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/supplier.png' %}" alt="supplier image" class="mb-2" width="225">
+                        <h5 class="card-title text-center">Punto de Compra</h5>
+                        <p class="card-text text-center">Entrada de Productos mediante compras a proveedores.</p>
                     </div>
                 </div>
             </a>
@@ -41,10 +54,88 @@ Inicio - Viva Control
         <div class="col-md-4">
             <a href="{% url 'inventario' %}" class="card-link">
                 <div class="card">
-                    <div class="card-body">
-                        <img src="{% static 'images/inventory.jpg' %}" alt="inventory image" width="197">
-                        <h5 class="card-title"><br>Inventario</h5>
-                        <p class="card-text">Revisa el stock de los productos por locales.</p>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/inventory.jpg' %}" alt="inventory image" class="mb-2" width="197">
+                        <h5 class="card-title text-center"><br>Inventario</h5>
+                        <p class="card-text text-center">Revisa el stock de los productos por locales.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <br>
+    <h2>Auxiliares: </h2>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'auxiliares' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <br>
+                        <img src="{% static 'images/auxiliar.png' %}" alt="auxiliar image" class="mb-2" width="272">
+                        <h5 class="card-title text-center">Auxiliares</h5>
+                        <p class="card-text text-center">Listado de los auxiliares registrados al sistema.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/contact.jpg' %}" alt="contact image" class="mb-2" width="225">
+                        <h5 class="card-title text-center">Contacto</h5>
+                        <p class="card-text text-center">Contactos de los auxiliares, pueden ser contactos adicionales de tus empleados.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'tipos' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/types.jpg' %}" alt="types image" class="mb-2" width="225">
+                        <h5 class="card-title text-center">Tipos</h5>
+                        <p class="card-text text-center">Listado de todos los tipos de auxiliares para poder clasificiarlos.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <br>
+    <h2>Generales: </h2>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'productos' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/product.jpg' %}" alt="product image" class="mb-2" width="208">
+                        <br>
+                        <h5 class="card-title text-center">Productos</h5>
+                        <p class="card-text text-center">Listado de productos junto con los atributos de, código, nombre y estado.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/report.png' %}" alt="report image" class="mb-2" width="225">
+                        <h5 class="card-title text-center">Generación de Informes</h5>
+                        <p class="card-text text-center">Generación de informes financieros de los movimientos realizados.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'metodos_pago' %}" class="card-link">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img src="{% static 'images/payments.png' %}" alt="payment image" class="mb-2" width="200">
+                        <h5 class="card-title text-center"><br>Métodos de Pago</h5>
+                        <p class="card-text text-center">Revisa los métodos de pago disponible para el punto de venta.</p>
                     </div>
                 </div>
             </a>
@@ -53,7 +144,5 @@ Inicio - Viva Control
 </div>
 <br><br>
 
-
 {% endif %}
-
 {% endblock content %}

@@ -189,13 +189,15 @@ def punto_venta(request):
             if code_query in cart:
                 cart[code_query]["quantity"] += 1
                 cart[code_query]["total"] = product.precio * cart[code_query]['quantity']
+                cart[code_query]["max_quantity"] = product.cantidad
 
             else:
                 cart[code_query] = {
                     "name": product.id_producto.nombre,
                     "price": product.precio,
                     "quantity": 1,
-                    "total": product.precio
+                    "total": product.precio,
+                    "max_quantity": product.cantidad
                 }
             
             total_price = 0
@@ -218,24 +220,44 @@ def punto_venta(request):
     return render(request, 'punto_venta.html', context)
 
 @login_required
+def actualizar_cantidad_carrito(request, codigo_barras):
+    if request.method != "POST":
+        return redirect('punto_venta')
+
+    if not request.POST.get("cantidad").isdigit():
+        messages.error(request, "Ingrese una cantidad válida.")
+        return redirect('punto_venta')
+
+    nueva_cantidad = int(request.POST.get("cantidad"))
+    cart = request.session.get('cart', {})
+
+    if codigo_barras not in cart:
+        messages.error(request, "Producto no encontrado en el carrito.")
+        return redirect('punto_venta')
+
+    producto = SucursalProducto.objects.filter(id_producto=codigo_barras).first()
+    if not producto or nueva_cantidad > producto.cantidad:
+        messages.error(request, f"Cantidad fuera de stock. Cantidad disponible: {cart[codigo_barras]['max_quantity']}")
+        return redirect('punto_venta')
+
+    cart[codigo_barras]["quantity"] = nueva_cantidad
+    cart[codigo_barras]["total"] = cart[codigo_barras]["price"] * nueva_cantidad
+
+    # Recalcular el total del precio
+    total_price = sum(item["total"] for item in cart.values())
+    request.session['total_price'] = total_price
+    request.session['cart'] = cart
+
+    messages.success(request, "Cantidad actualizada correctamente.")
+    return redirect('punto_venta')
+
+@login_required
 def punto_compra(request):
     return render(request, 'punto_compra.html')
 
 @login_required
 def punto_otros(request):
     return render(request, 'punto_otros.html')
-
-def editar_producto_carrito(request, code):
-    cart = request.session.get('cart', {})
-    total_price = request.session.get('total_price', 0)
-
-    if code not in cart:
-        messages.success(request, "el producto no se encuentra en el carrito.")
-        return redirect('punto_venta')
-    
-    product = cart[code]
-
-    return render(request, )
 
 @login_required
 def eliminar_producto_carrito(request, code):

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar Método - Viva Control
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+
+
+        <div class="col-md-4">
+            <h3>Editar Método de Pago</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="txtNombre">Nombre</label>
+                    <input type="text" class="form-control" id="txtNombre" name="txtNombre"
+                        placeholder="Ingrese el nuevo nombre" value="{{metodo.nombre}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="txtDescripcion">Descripción</label>
+                    <input type="text" class="form-control" id="txtDescripcion" name="txtDescripcion"
+                        placeholder="Ingrese la nueva descripción" value="{{metodo.descripcion}}" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+
+                {% if messages %}
+                {% for message in messages %}
+                {%if message.tags == 'error'%}
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    {% else %}
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        {% endif %}
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    {% endfor %}
+                    {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

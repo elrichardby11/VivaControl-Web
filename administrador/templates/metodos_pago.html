@@ -1,111 +1,69 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container-fluid mt-3">
+<div class="container mt-5">
   <div class="row">
-    <h3 class="mb-3">Agregar nuevo empleado</h3>
-    <div class="col-sm-12 col-md-12 col-lg-3 col-xl-3">
-      <form class="form-control" action="" method="POST" style="padding: 10px">
-        {% csrf_token %}
-        <div class="mb-3">
-          <input type="text" class="form-control" id="txtRut" name="txtRut" required maxlength="12" placeholder="Rut" />
-        </div>
-        <div class="mb-3">
-          <input type="text" class="form-control" id="txtNombre" name="txtNombre" required placeholder="Nombre" />
-        </div>
-        <div class="mb-3">
-          <input type="text" class="form-control" id="txtApellido" name="txtApellido" placeholder="Apellido" />
-        </div>
-        <div class="mb-3">
-          <input type="email" class="form-control" id="txtCorreo" name="txtCorreo" required
-            placeholder="correo@gmail.com" />
-        </div>
-        <div class="mb-3">
-          <label for="fecha">Fecha de nacimiento: </label>
-          <input type="date" class="form-control" id="Fecha" name="Fecha" required value="2000-01-01" />
-        </div>
-        <div class="mb-3">
-          <label for="pais">País</label><br />
-          <select class="form-select" name="Pais" id="Pais">
-            <option value="Chile">Chile</option>
-            <option value="Argentina">Argentina</option>
-            <option value="Perú">Perú</option>
-            <option value="Colombia">Colombia</option>
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label class="form-check-label">Genero</label>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="Genero" value="M" id="Masculino" checked />
-            <label class="form-check-label">Masculino</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="Genero" value="F" id="Femenino" />
-            <label class="form-check-label">Femenino</label>
-          </div>
-        </div>
-        <div class="d-flex justify-content-center">
-          <button type="submit" class="btn btn-success text-center"
-            style="margin: 10px; width: 150px; justify-content: center">
-            Guardar
-          </button>
-        </div>
-      </form>
+      <div class="col-md-4">
+          <h3>Añadir Métodos de Pago</h3>
+          <form action="{% url 'agregar_metodo' %}" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                  <label for="txtNombre">Nombre</label>
+                  <input type="text" class="form-control" id="txtNombre" name="txtNombre"
+                      placeholder="Ingrese el nombre">
+              </div>
+              <div class="form-group">
+                  <label for="txtDescripcion">Descripción</label>
+                  <input type="text" class="form-control" id="txtDescripcion" name="txtDescripcion"
+                      placeholder="Ingrese descripción">
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar</button>
 
-      {% if messages %}
-      {% for message in messages %}
-      {% if message.tags == 'error' %}
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {% else %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          {% endif %}
+              {% if messages %}
+              {% for message in messages %}
+              {%if message.tags == 'error'%}
+              <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                  {% else %}
+                  <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                      {% endif %}
+                      <strong>{{ message }}</strong>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
 
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        {% endfor %}
-        {% endif %}
+                  {% endfor %}
+                  {% endif %}
+          </form>
       </div>
 
-      <!-- Columna del visor de usuarios registrados -->
-      <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="row">Rut</th>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Correo</th>
-              <th>Fecha de Nacimiento</th>
-              <th>País</th>
-              <th>Genero</th>
-              <th>Opciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for empleado in empleados %}
-            <tr>
-              <td>{{empleado.rut}}</td>
-              <td>{{empleado.nombre}}</td>
-              <td>{{empleado.apellido}}</td>
-              <td>{{empleado.correo}}</td>
-              <td>{{empleado.fechaNacimiento}}</td>
-              <td>{{empleado.pais}}</td>
-              <td>{{empleado.genero}}</td>
-              <td class="text-center">
-                <a href="editar_empleado/{{empleado.rut}}" class="btn btn-primary btn-md">Editar</a>
-              </td>
-              <td class="text-center">
-                <a href="eliminar_empleado/{{empleado.rut}}" class="btn btn-danger btn-md">Eliminar</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <br><br><br><br>
+
+      <div class="col-md-8">
+          <h3>Listado</h3>
+          <div class="table-responsive">
+              <table class="table table-striped">
+                  <thead>
+                      <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Descripción</th>
+                          <th scope="col">Opciones</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for metodo in metodos %}
+                      <tr>
+                          <td>{{ metodo.id }}</td>
+                          <td>{{ metodo.nombre }}</td>
+                          <td>{{ metodo.descripcion }}</td>
+                          <td>
+                              <a href="{% url 'editar_metodo' metodo.id %}" class="btn btn-primary btn-sm">Editar</a>
+                              <a href="{% url 'eliminar_metodo' metodo.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                          </td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
       </div>
-    </div>
   </div>
 </div>
 

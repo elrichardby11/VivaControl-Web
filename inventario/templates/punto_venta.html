@@ -68,16 +68,22 @@ Punto de Venta - Viva Control
                             <td>{{ code }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.price }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' code %}">
+                                    {% csrf_token %}
+                                    <input type="number" name="cantidad" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" class="form-control" style="width: 80px;">
+                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Actualizar</button>
+                                </form>
+                            </td>
                             <td>{{ item.total }}</td>
                             <td class="text-center">
                                 <a href="" class="btn btn-dark btn-sm">Ver Producto</a>
-                                <a href="" class="btn btn-primary btn-sm">Editar</a>
-                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a></td>
+                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                                    </table>
             </div>
         </div>
         <div class="col-md-2">

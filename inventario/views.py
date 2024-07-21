@@ -228,6 +228,11 @@ def actualizar_cantidad_carrito(request, codigo_barras):
         messages.error(request, "Ingrese una cantidad válida.")
         return redirect('punto_venta')
 
+    if not request.session['local_query']:
+        messages.error(request, "Error al obtener local.")
+        return redirect('punto_venta')
+
+    local_query = request.session['local_query']
     nueva_cantidad = int(request.POST.get("cantidad"))
     cart = request.session.get('cart', {})
 
@@ -235,11 +240,11 @@ def actualizar_cantidad_carrito(request, codigo_barras):
         messages.error(request, "Producto no encontrado en el carrito.")
         return redirect('punto_venta')
 
-    producto = SucursalProducto.objects.filter(id_producto=codigo_barras).first()
+    producto = SucursalProducto.objects.filter(id_producto=codigo_barras, id_sucursal=local_query).first()
     if not producto or nueva_cantidad > producto.cantidad:
         messages.error(request, f"Cantidad fuera de stock. Cantidad disponible: {cart[codigo_barras]['max_quantity']}")
         return redirect('punto_venta')
-
+  
     cart[codigo_barras]["quantity"] = nueva_cantidad
     cart[codigo_barras]["total"] = cart[codigo_barras]["price"] * nueva_cantidad
 
@@ -265,7 +270,7 @@ def eliminar_producto_carrito(request, code):
     total_price = request.session.get('total_price', 0)
     
     if code not in cart:
-        messages.success(request, "el producto no se encuentra en el carrito.")
+        messages.success(request, "El producto no se encuentra en el carrito.")
         return redirect('punto_venta')
 
     total_price -= int(cart[code]['total'])
@@ -274,7 +279,7 @@ def eliminar_producto_carrito(request, code):
     request.session['total_price'] = total_price
     messages.success(request, "Producto eliminado del carrito.")
     return redirect('punto_venta')
-    
+
 @login_required
 def clear_cart():
     pass

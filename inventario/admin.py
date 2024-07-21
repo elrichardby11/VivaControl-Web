@@ -8,7 +8,7 @@ class CStateMovimientoAdmin(admin.ModelAdmin):
 admin.site.register(CStateMovimiento, CStateMovimientoAdmin)
 
 class PagoMovimientoAdmin(admin.ModelAdmin):
-    list_display = ("id_pago", "monto", )
+    list_display = ("id_pago", "metodo", "monto", )
 
 admin.site.register(PagoMovimiento, PagoMovimientoAdmin)
 

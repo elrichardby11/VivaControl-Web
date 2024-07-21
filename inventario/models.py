@@ -5,13 +5,13 @@ from auxiliares.models import Auxiliar
 from productos.models import Producto
 
 class CStateMovimiento(models.Model):
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nombre
 
 class PagoMovimiento(models.Model):
-    id_pago = models.AutoField(primary_key=True)
+    id_pago = models.IntegerField()
     metodo = models.ForeignKey(MetodosPago, on_delete=models.CASCADE)
     monto = models.IntegerField()
 
@@ -39,7 +39,7 @@ class Movimiento(models.Model):
     pago = models.ForeignKey(PagoMovimiento, on_delete=models.CASCADE)  # Usando el modelo PagoMovimiento
 
     def __str__(self):
-        return f"Movimiento {self.id}"
+        return f"Movimiento: {self.id}"
 
 class SucursalProducto(models.Model):
     id_sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
@@ -51,7 +51,7 @@ class SucursalProducto(models.Model):
         unique_together = (('id_sucursal', 'id_producto'),)
 
     def __str__(self):
-        return f"Producto {self.id_producto} en Sucursal {self.id_sucursal}"
+        return f"Producto: {self.id_producto} en Sucursal {self.id_sucursal}"
 
 class DetalleMovimiento(models.Model):
     movimiento = models.ForeignKey(Movimiento, on_delete=models.CASCADE)

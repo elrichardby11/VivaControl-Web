@@ -54,8 +54,7 @@ def editar_auxiliar(request, rut_auxiliar):
             web = request.POST["txtSitioWeb"]
             fecha = request.POST["txtFecha"]
             telefono = request.POST["txtNumero"]
-            activo = request.POST["txtActivo"]
-            activo = True if activo == "on" else False
+            activo = 'txtActivo' in request.POST
             id_tipo = request.POST["tipo_auxiliar"]
             id_comuna = request.POST["comunas"]
 

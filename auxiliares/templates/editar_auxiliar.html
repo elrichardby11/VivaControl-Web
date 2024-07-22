@@ -45,7 +45,7 @@ Editar Auxiliar - Viva Control
                         </div>
                         <div class="form-group">
                             <label for="txtActivo">Activo *</label>
-                            <input type="checkbox" checked="checked" id="txtActivo" name="txtActivo" required/>
+                            <input type="checkbox" id="txtActivo" name="txtActivo" {% if auxiliar.activo %}checked{% endif %}/>
                         </div>
                         <div class="form-group">
                             <label for="tipo_auxiliar">Tipo Auxiliar</label>

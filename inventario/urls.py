@@ -13,5 +13,6 @@ urlpatterns = [
     path('punto/compra/', views.punto_compra, name='punto_compra'),
     path('punto/otros/', views.punto_otros, name='punto_otros'),
     path('movimiento/', views.movement_list, name="movimiento"),
-    path('movimiento/detalle/<id>', views.detail_list),
+    path('movimiento/detalle/<id>', views.detail_list, name="ver_detalle"),
+    path('movimiento/detalle/boleta/<id>', views.ticket_view, name="ver_boleta"),
 ]

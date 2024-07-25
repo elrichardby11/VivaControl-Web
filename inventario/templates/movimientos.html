@@ -67,7 +67,7 @@ Movimientos - Viva Control
                 <td>{{ inventario.auxiliar.rut_auxiliar }}-{{ inventario.auxiliar.dv }}</td>
                 <td>{{ inventario.pago }}</td>
                 <td class="text-center">
-                    <a href="detalle/{{ inventario.id }}" class="btn btn-dark btn-md">Ver Detalle</a>
+                <a href="{% url 'ver_detalle' inventario.id %}" class="btn btn-dark btn-md">Ver Detalle</a>
                 <a href="editar/{{ inventario.id }}" class="btn btn-primary btn-md">Editar</a>
                 <a href="detalle/{{ inventario.id }}" class="btn btn-danger btn-md">Eliminar</a> </td>
             </tr>

@@ -1,3 +1,4 @@
+import glob
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -49,7 +50,30 @@ def movement_list(request):
 def detail_list(request, id):
     detalles = DetalleMovimiento.objects.filter(movimiento=id)
 
-    return render(request, 'detalle.html', context={"detalles": detalles})
+    return render(request, 'detalle.html', context={"detalles": detalles,
+                                                    "id": id})
+
+@login_required
+def ticket_view(request, id):
+    # Usar glob para encontrar el archivo que coincide con el patrón
+    file_pattern = f"inventario/boletas/{id}__*.txt"
+    file_list = glob.glob(file_pattern)
+
+    # Verificar si se encontró algún archivo
+    if not file_list:
+        return render(request, "boleta.html", {"error": "Boleta no encontrada", "id": id})
+
+    # Asumir que se encontró el primer archivo que coincide con el patrón
+    file_path = file_list[0]
+
+    try:
+        with open(file_path, "r") as file:
+            boleta_content = file.read()
+    except IOError:
+        return render(request, "boleta.html", {"error": "No se pudo leer la boleta", "id": id})
+
+    return render(request, "boleta.html", {"boleta_content": boleta_content, "id": id})
+
 
 @login_required
 def inventory_list(request):

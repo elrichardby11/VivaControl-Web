@@ -8,7 +8,12 @@ Detalle - Viva Control
 
 <div class="container mt-4">
     <h1>Detalle</h1>
-    <br>
+    <form method="POST" action="{% url 'ver_boleta' id %}">
+        <div class="form-floating mb-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary mt-3" >Ver Boleta</button>
+        </div>
+    </form>
     <table class="table table-bordered">
         <thead>
             <tr>

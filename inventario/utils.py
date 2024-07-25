@@ -99,6 +99,7 @@ def save_payment_details(request, cart, total_amount, payment_method, local_quer
             # Actualizar el coste total en el movimiento
             movimiento.coste_total = coste_total
             movimiento.save()
+            return movimiento.id
 
     except Exception as e:
         messages.error(request, f"Error al procesar el pago: {str(e)}")
@@ -107,10 +108,10 @@ def save_payment_details(request, cart, total_amount, payment_method, local_quer
 def save_ticket(request, cart, total_amount, payment_method, local_query, efectivo=None):
     try:
 
-        save_payment_details(request, cart, total_amount, payment_method, local_query)
+        id_movimiento = save_payment_details(request, cart, total_amount, payment_method, local_query)
         now, fecha, hora = get_date()
 
-        with open_file(now) as file:
+        with open_file(now, id_movimiento) as file:
             write_header(file, fecha, hora)
             write_detail(file, cart, total_amount)
             write_payments(file, total_amount, payment_method, efectivo)
@@ -125,19 +126,19 @@ def get_date():
     hora = now.strftime("Hora: %H:%M:%S")
     return now, fecha, hora
 
-def open_file(now):
-    directory = "inventario/boletas"
+def open_file(now, id_movimiento):
+    directory = f"inventario/boletas"
+    id_movimiento = str(id_movimiento) if id_movimiento else 0
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)
         
-        filename = now.strftime(f"{directory}/%Y-%m-%d_%H-%M-%S.txt")
+        filename = now.strftime(f"{directory}/{id_movimiento}__%Y-%m-%d_%H-%M-%S.txt")
         print(f"Registro guardado en {filename}")
         return open(filename, "w")
     except OSError as e:
         print(f"Error creating file: {e}")
         return None
-
 
 def write_header(file, fecha, hora):
     file.write(" _____________________________________________________ \n")
@@ -185,7 +186,7 @@ def write_detail(file, cart, total_amount):
 def write_payments(file, total_amount, payment_method, efectivo):
 
     try:
-        payment_quantity = int(efectivo)  # Convert to integer if it's a string
+        payment_quantity = int(efectivo) if efectivo else 0 # Convert to integer if it's a string
     except ValueError:
         print("Error: 'efectivo' Debe ser un valor válido.")
         return

@@ -54,8 +54,11 @@ Ahora estás listo para ejecutar el proyecto, puedes iniciar la aplicación con:
 python manage.py runserver
 ```
 
-## Demo 
+## Demo
 
-![demogif](https://github.com/elrichardby11/VivaControl-Web/assets/76932746/125a68bf-56ac-4ff6-ab91-69fe1b3fc53e)
+![2024-07-25 16-44-54](https://github.com/user-attachments/assets/c25b59d1-8a19-4949-b1d7-98da862ae66d)
+
+![2024-07-25 16-45-33](https://github.com/user-attachments/assets/42f57cfc-b8ee-42af-9c42-b5ab0ab5cf41)
+
 ![Sobre nosotros - Viva Control](https://github.com/elrichardby11/VivaControl-Web/assets/76932746/a9e6b28d-f88a-44c7-a5f9-88db581550df)
 

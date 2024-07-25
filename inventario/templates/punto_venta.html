@@ -83,26 +83,31 @@ Punto de Venta - Viva Control
                         </tr>
                         {% endfor %}
                     </tbody>
-                                    </table>
+                </table>
             </div>
         </div>
         <div class="col-md-2">
             <div class="form-floating mb-3">
-                
                 <h5>Total: {{total_price}}</h5>
             </div>
-            <div class="form-floating mb-3">
-                <select class="form-select" id="metodo_pago" name="metodo_pago" aria-label="Floating label select example">
-                    <option value="">Seleccione Método de Pago</option>
-                    {% for metodo in metodos %}
-                    <option value="{{ metodo.id }}" {% if local_query == metodo.id|stringformat:"s" %}selected{% endif %}>{{ metodo.nombre }}</option>
-                    {% endfor %}
-                </select>
-                <label for="metodo_pago">Método de Pago:</label>
-                <button type="submit" class="btn btn-primary mt-3">Pagar</button>
-            </div>
+            <form method="POST" action="{% url 'punto_venta_pagar' %}">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="metodo_pago" name="metodo_pago" aria-label="Floating label select example">
+                        <option value="">Seleccione Método de Pago</option>
+                        {% for metodo in metodos %}
+                        <option value="{{ metodo.id }}" {% if local_query == metodo.id|stringformat:"s" %}selected{% endif %}>{{ metodo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="metodo_pago">Método de Pago:</label>
+                </div>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="efectivo" name="efectivo" placeholder="10500" value="">
+                    <label for="efectivo">Monto Efectivo</label>
+                </div>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-3" >Pagar</button>
+            </form>
         </div>
-
     </div>
 </div>
 <br>

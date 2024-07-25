@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from administrador.models import Sucursal, MetodosPago
+from inventario.utils import save_ticket
 from .models import CStateMovimiento, DetalleMovimiento, Movimiento, SucursalProducto, TipoMovimiento
 from django.core.paginator import Paginator             
 
@@ -220,6 +221,67 @@ def punto_venta(request):
     return render(request, 'punto_venta.html', context)
 
 @login_required
+def punto_venta_pagar(request):
+    if request.method == "POST":
+        # Obtener el total del carrito y el local seleccionado
+        total_amount = request.session.get('total_price', 0)
+        local_query = request.session.get('local_query', '')
+
+        if not local_query:
+            messages.error(request, "Por favor, selecciona una sucursal.")
+            return redirect('punto_venta')
+
+        if total_amount == 0:
+            messages.error(request, "Por favor, agrega un producto.")
+            return redirect('punto_venta')
+
+        # Obtener el método de pago seleccionado
+        payment_method_id = request.POST.get('metodo_pago')
+        if not payment_method_id:
+            messages.error(request, "Por favor, selecciona un método de pago.")
+            return redirect('punto_venta')
+
+        # Obtener el método de pago de la base de datos
+        payment_method = MetodosPago.objects.filter(id=payment_method_id).first()
+
+        if not payment_method:
+            messages.error(request, "Método de pago no válido.")
+            return redirect('punto_venta')
+
+        # Procesar pago en efectivo
+        if payment_method.nombre == "Efectivo":
+            efectivo = request.POST.get('efectivo')
+
+            if not efectivo or not efectivo.isdigit() or int(efectivo) < total_amount:
+                messages.error(request, "Por favor, verifica el monto en efectivo.")
+                return redirect('punto_venta')
+
+            vuelto = int(efectivo) - total_amount
+
+            print("vuelto", vuelto)
+
+            # Guardar detalles de pago en la base de datos
+            current_cart = request.session.get('cart', {})
+            save_ticket(request, current_cart, total_amount, payment_method, local_query, efectivo)
+
+            # Vaciar carrito después del pago
+            clear_cart(request)
+
+            messages.success(request, "Pago realizado con éxito.")
+            return redirect('punto_venta')  
+
+        current_cart = request.session.get('cart', {})
+        # Actualizar siguiente funcion
+        save_ticket(request, current_cart, total_amount, payment_method, local_query)
+
+        clear_cart(request)
+
+        messages.success(request, "Pago realizado con éxito.")
+        return redirect('punto_venta')
+
+    return redirect('punto_venta')
+
+@login_required
 def actualizar_cantidad_carrito(request, codigo_barras):
     if request.method != "POST":
         return redirect('punto_venta')
@@ -281,5 +343,13 @@ def eliminar_producto_carrito(request, code):
     return redirect('punto_venta')
 
 @login_required
-def clear_cart():
-    pass
+def clear_cart(request):
+    # Vacía el carrito de compras y restablece la sesión
+    
+    # Eliminar el carrito de la sesión
+    request.session['cart'] = {}
+    request.session['total_price'] = 0
+    request.session['local_query'] = ''
+
+    messages.success(request, "Carrito vacío exitosamente.")
+    return redirect('punto_venta')

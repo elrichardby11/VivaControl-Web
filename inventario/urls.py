@@ -9,6 +9,7 @@ urlpatterns = [
     path('punto/venta/', views.punto_venta, name='punto_venta'),
     path('punto/venta/editar/<str:codigo_barras>/', views.actualizar_cantidad_carrito, name='actualizar_cantidad_carrito'),
     path('punto/venta/eliminar/<str:code>/', views.eliminar_producto_carrito, name='eliminar_p_carrito'),
+    path('punto/venta/pagar/', views.punto_venta_pagar, name='punto_venta_pagar'),
     path('punto/compra/', views.punto_compra, name='punto_compra'),
     path('punto/otros/', views.punto_otros, name='punto_otros'),
     path('movimiento/', views.movement_list, name="movimiento"),

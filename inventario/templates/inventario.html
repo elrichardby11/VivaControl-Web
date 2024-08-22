@@ -53,9 +53,8 @@ Inventario - Viva Control
                 <td>{{ row.id_sucursal.id_sucursal }} - {{ row.id_sucursal }}</td>
                 <td>{{ row.cantidad }}</td>
                 <td>{{ row.precio }}</td>
-                <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a>
+                <td class="text-center"><a href="{% url 'producto_edit' row.id_producto.id_producto %}" class="btn btn-dark btn-md">Ver Producto</a>
                 <a href="{% url 'editar_inventario' row.id_producto.id_producto row.id_sucursal.id_sucursal %}" class="btn btn-primary btn-md">Editar</a>
-                <a href="{% url 'eliminar_inventario' row.id_producto.id_producto row.id_sucursal.id_sucursal %}" class="btn btn-danger btn-md">Eliminar</a> </td>
             </tr>
             {% endfor %}
         </tbody>

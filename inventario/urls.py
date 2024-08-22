@@ -4,7 +4,6 @@ from . import views
 urlpatterns = [
     path('', views.inventory_list, name="inventario"),
     path('editar_inventario/<str:id_producto>/<str:id_sucursal>', views.edit_inventory, name="editar_inventario"),
-    path('eliminar_inventario/<str:id_producto>/<str:id_sucursal>', views.delete_inventory, name="eliminar_inventario"),
     path('punto/', views.puntos, name='puntos'),
     path('punto/venta/', views.punto_venta, name='punto_venta'),
     path('punto/venta/editar/<str:codigo_barras>/', views.actualizar_cantidad_carrito, name='actualizar_cantidad_carrito'),

@@ -108,12 +108,10 @@ def inventory_list(request):
 def edit_inventory(request, id_sucursal, id_producto):
 
     if request.method == "POST":
-        cantidad = request.POST["txtCantidad"]
         precio = request.POST["txtPrecio"]
 
         try:
             inventario = SucursalProducto.objects.get(id_producto=id_producto, id_sucursal=id_sucursal)
-            inventario.cantidad = cantidad
             inventario.precio = precio
             
             inventario.save()
@@ -133,13 +131,6 @@ def edit_inventory(request, id_sucursal, id_producto):
                   "editar_inventario.html",
                   context={"inventario": inventario,
                            })
-
-def delete_inventory(request, id_producto, id_sucursal):
-    inventario = SucursalProducto.objects.get(id_producto=id_producto, id_sucursal=id_sucursal)
-    inventario.delete()
-    messages.success(request, "Inventario eliminado correctamente! ")
-
-    return redirect('inventario')
 
 @login_required
 def puntos(request):
@@ -185,12 +176,15 @@ def punto_venta(request):
             if not new_local_query:
                 messages.error(request, "Debe seleccionar un local primero.")
                 return redirect('punto_venta')
+            
             if cart and local_query and new_local_query != local_query:
                 messages.error(request, "No se puede cambiar de local con productos en el carrito.")
                 return redirect('punto_venta')
+            
             if not code_query:
                 messages.error(request, "Debe de añadir el código de barras.")
                 return redirect('punto_venta')
+            
             if not code_query.isdigit() or len(code_query) > 15:
                 messages.error(request, "Debe de añadir un código de barras válido.")
                 return redirect('punto_venta')
@@ -348,7 +342,125 @@ def punto_compra(request):
 
 @login_required
 def punto_otros(request):
-    return render(request, 'punto_otros.html')
+    locales = Sucursal.objects.all()
+    metodos = MetodosPago.objects.all()
+    tipos = TipoMovimiento.objects.exclude(nombre__in=["Compra", "Venta"])
+    
+    # Inicializar variables si no existen
+    if 'cart' not in request.session:
+        request.session['cart'] = {} 
+
+    if ('local_query' not in request.session) or (request.session['cart'] == {}):
+        request.session['local_query'] = ''
+
+    if ('tipo_query' not in request.session) or (request.session['cart'] == {}):
+        request.session['tipo_query'] = ''
+
+    if 'total_price' not in request.session:
+        request.session['total_price'] = 0
+
+    cart = request.session['cart']
+    local_query = request.session['local_query']
+    tipo_query = request.session['tipo_query']
+    total_price = request.session['total_price']
+
+    context = {
+        "locales": locales,
+        "metodos": metodos,
+        "tipos": tipos,
+        "cart": cart,
+        "local_query": local_query,
+        "tipo_query": tipo_query,
+        "codigo_barras": request.GET.get('codigo_barras', ''),
+        "total_price": total_price
+    }
+
+    if request.method == "GET":
+        # Capturando los parámetros de la petición
+        code_query = request.GET.get('codigo_barras', '')
+
+        if 'codigo_barras' in request.GET or 'local' in request.GET or 'tipo' in request.GET:
+
+            new_local_query = request.GET.get('local', '')
+            new_tipo_query = request.GET.get('tipo', '')
+
+            if not new_local_query:
+                messages.error(request, "Debe seleccionar un local primero.")
+                return redirect('punto_otros')
+            
+            if not new_tipo_query:
+                messages.error(request, "Debe seleccionar un tipo de movimiento.")
+                return redirect('punto_otros')
+            
+            if cart and local_query and new_local_query != local_query:
+                messages.error(request, "No se puede cambiar de local con productos en el carrito.")
+                return redirect('punto_otros')
+            
+            if cart and tipo_query and new_tipo_query != tipo_query:
+                messages.error(request, "No se puede cambiar de tipo de movimiento con productos en el carrito.")
+                return redirect('punto_otros')
+            
+            if not code_query:
+                messages.error(request, "Debe de añadir el código de barras.")
+                return redirect('punto_otros')
+            
+            if not code_query.isdigit() or len(code_query) > 15:
+                messages.error(request, "Debe de añadir un código de barras válido.")
+                return redirect('punto_otros')
+
+            # Actualizar local y tipo query de la sesión
+            request.session['local_query'] = new_local_query
+            request.session['tipo_query'] = new_tipo_query
+
+            products = SucursalProducto.objects.filter(id_sucursal=new_local_query)
+            product = products.filter(id_producto=code_query).first()
+
+            if not product:
+                messages.error(request, "Producto no encontrado.")
+                return render(request, 'punto_otros.html', context)
+
+            quantity = product.cantidad
+            if code_query in cart and cart[code_query]["quantity"] >= quantity:
+                messages.error(request, "Producto fuera de stock.")
+                return render(request, 'punto_otros.html', context)
+
+            # Añadir o actualizar el producto en el carrito
+            if code_query in cart:
+                cart[code_query]["quantity"] += 1
+                cart[code_query]["total"] = product.precio * cart[code_query]['quantity']
+                cart[code_query]["max_quantity"] = product.cantidad
+
+            else:
+                cart[code_query] = {
+                    "name": product.id_producto.nombre,
+                    "price": product.precio,
+                    "quantity": 1,
+                    "total": product.precio,
+                    "max_quantity": product.cantidad
+                }
+            
+            total_price = 0
+            for code in cart:
+                total_price += int(cart[code]['total'])
+
+            request.session['cart'] = cart
+            request.session['local_query'] = new_local_query
+            request.session['tipo_query'] = new_tipo_query
+            request.session['total_price'] = total_price
+            
+            context.update({
+                "local_query": new_local_query,
+                "tipo_query": new_tipo_query,
+                "codigo_barras": code_query,
+                "total_price": total_price
+            })
+
+            messages.success(request, f"Producto encontrado: {product.id_producto.nombre}. Cantidad disponible: {quantity}.")
+            return redirect('punto_otros')
+
+    return render(request, 'punto_otros.html', context)
+
+
 
 @login_required
 def eliminar_producto_carrito(request, code):

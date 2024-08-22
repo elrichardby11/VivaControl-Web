@@ -6,6 +6,145 @@ Punto de Salida - Viva Control
 
 {% block content %}
 
-<h1>Punto de Otros</h1>
+<div class="container mt-4">
+    <h1>Punto de Salida General</h1>
+    <br>
+    <!-- Mensajes de éxito y error -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% else %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% endif %}
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="GET" action="{% url 'punto_otros' %}" id="product-form">
+        <div class="row g-2">
+            <div class="col-md">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="codigo_barras" name="codigo_barras" placeholder="12345678" value="">
+                    <label for="codigo_barras">Agregar Producto (código barras)</label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-floating">
+                    <select class="form-select" id="local" name="local" aria-label="Floating label select example">
+                        <option value="">Seleccione Local</option>
+                        {% for local in locales %}
+                        <option value="{{ local.id_sucursal }}" {% if local_query == local.id_sucursal|stringformat:"s" %}selected{% endif %}>{{ local.id_sucursal }} - {{ local.direccion }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="local">Local:</label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-floating">
+                    <select class="form-select" id="tipo" name="tipo" aria-label="Floating label select example">
+                        <option value="">Seleccione Tipo</option>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.id }}" {% if local_query == tipo.id|stringformat:"s" %}selected{% endif %}>{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="local">Tipo:</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Buscar Producto</button>
+    </form>
+    <br>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="table-wrapper">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Código de Barras</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Total</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for code, item in cart.items %}
+                        <tr>
+                            <td>{{ code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' code %}">
+                                    {% csrf_token %}
+                                    <input type="number" name="cantidad" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" class="form-control" style="width: 80px;">
+                                    <button type="submit" class="btn btn-primary btn-sm mt-2">Actualizar</button>
+                                </form>
+                            </td>
+                            <td>{{ item.total }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
+                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-floating mb-3">
+                <h5>Total: {{total_price}}</h5>
+            </div>
+            <form method="POST" action="{% url 'punto_venta_pagar' %}">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="comentario" name="comentario" placeholder="" value="">
+                            <label for="comentario">Comentario</label>
+                        </div>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-3" >Enviar</button>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
 
 {% endblock content %}
+
+{% block extra_styles %}
+<style>
+    .table-wrapper {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .table-wrapper thead th {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 2;
+    }
+</style>
+{% endblock extra_styles %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const barcodeInput = document.getElementById('codigo_barras');
+        barcodeInput.focus();
+
+        // Enfocar el input cada vez que el formulario se envíe
+        const form = document.getElementById('product-form');
+        form.addEventListener('submit', function() {
+            setTimeout(() => {
+                barcodeInput.focus();
+            }, 10);
+        });
+    });
+</script>
+{% endblock extra_scripts %}
+

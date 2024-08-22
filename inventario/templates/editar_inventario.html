@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
              
-<div class="container mt-5 mb-3">
+<div class="container mt-4">
     <h1>Inventario</h1>
     <div class="row justify-content-center">
         <div class="col-sm-8 col-md-8 col-lg-6">
@@ -55,7 +55,7 @@
                             class="form-control"
                             id="txtCantidad"
                             name="txtCantidad"
-                            required
+                            disabled
                             value="{{inventario.cantidad}}"
                             />
                         </div>

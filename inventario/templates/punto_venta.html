@@ -77,7 +77,7 @@ Punto de Venta - Viva Control
                             </td>
                             <td>{{ item.total }}</td>
                             <td class="text-center">
-                                <a href="" class="btn btn-dark btn-sm">Ver Producto</a>
+                                <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
                                 <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>

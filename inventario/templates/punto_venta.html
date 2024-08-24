@@ -69,7 +69,7 @@ Punto de Venta - Viva Control
                             <td>{{ item.name }}</td>
                             <td>{{ item.price }}</td>
                             <td>
-                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' code %}">
+                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' 'punto_venta' code %}">
                                     {% csrf_token %}
                                     <input type="number" name="cantidad" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" class="form-control" style="width: 80px;">
                                     <button type="submit" class="btn btn-primary btn-sm mt-2">Actualizar</button>
@@ -78,7 +78,7 @@ Punto de Venta - Viva Control
                             <td>{{ item.total }}</td>
                             <td class="text-center">
                                 <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
-                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="{% url 'eliminar_p_carrito' 'punto_venta' code %}" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -90,7 +90,7 @@ Punto de Venta - Viva Control
             <div class="form-floating mb-3">
                 <h5>Total: {{total_price}}</h5>
             </div>
-            <form method="POST" action="{% url 'punto_venta_pagar' %}">
+            <form method="POST" action="{% url 'punto_confirmacion' 'punto_venta' %}">
                 <div class="form-floating mb-3">
                     <select class="form-select" id="metodo_pago" name="metodo_pago" aria-label="Floating label select example">
                         <option value="">Seleccione Método de Pago</option>

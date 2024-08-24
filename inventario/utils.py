@@ -9,27 +9,56 @@ from auxiliares.models import Auxiliar
 from productos.models import Producto
 from .models import PagoMovimiento, Movimiento, DetalleMovimiento, SucursalProducto, TipoMovimiento, CStateMovimiento
 
-def save_payment_details(request, cart, total_amount, payment_method, local_query):
+def save_ticket(request, contexto, cart, total_amount, local_query, type_mov, payment_method=None, cash=None):
+    try:
+
+        id_movimiento = save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method)
+        now, fecha, hora = get_date()
+
+        with open_file(now, id_movimiento) as file:
+            write_header(file, fecha, hora, type_mov)
+            write_detail(file, cart, total_amount, type_mov)
+
+            if type_mov == 1:
+                write_payments(file, total_amount, payment_method, cash)
+            else:
+                file.write(" -------------------- SALIDA ESPECIAL ---------------- \n")
+                file.write(" Nota: \n")
+                file.write("     Esta operación corresponde a una salida especial. \n")
+                file.write(" ===================================================== ")
+    
+    except Exception as e:
+        messages.error(request, f"Error al procesar la transacción: {str(e)}")
+        return redirect(contexto)
+
+def save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method):
     try:
         # Obtener la sucursal
         sucursal = Sucursal.objects.get(id_sucursal=local_query)
 
         # Obtener el estado y el tipo de movimiento
-        tipo_movimiento = TipoMovimiento.objects.get(nombre="Venta")
+        tipo_movimiento = TipoMovimiento.objects.get(id=type_mov)
         cstate_movimiento = CStateMovimiento.objects.get(nombre="Activo")
 
         # Crear PagoMovimiento
         with transaction.atomic():  # Usar transacción atómica para asegurar consistencia
-            max_id_pago = PagoMovimiento.objects.aggregate(Max('id_pago'))['id_pago__max'] or 0
-            new_id_pago = max_id_pago + 1
-            pago_movimiento = PagoMovimiento.objects.create(
-                id_pago=new_id_pago,
-                metodo=payment_method,
-                monto=total_amount
-            )
+
+            if type_mov in [1, 2]:
+                max_id_pago = PagoMovimiento.objects.aggregate(Max('id_pago'))['id_pago__max'] or 0
+                new_id_pago = max_id_pago + 1
+                pago_movimiento = PagoMovimiento.objects.create(
+                    id_pago=new_id_pago,
+                    metodo=payment_method,
+                    monto=total_amount
+                )
+
+            else:
+                pago_movimiento = None
 
             # Obtener el auxiliar genérico para el cliente
             auxiliar = Auxiliar.objects.get(rut_auxiliar=1)
+            # Precio total 0 si es salida especial
+            total_amount = 0 if type_mov not in [1, 2] else total_amount
 
             # Crear Movimiento
             movimiento = Movimiento.objects.create(
@@ -56,11 +85,11 @@ def save_payment_details(request, cart, total_amount, payment_method, local_quer
                 # Obtener compras previas y ventas
                 compras = DetalleMovimiento.objects.filter(
                     sucursal_producto=sucursal_producto,
-                    movimiento__tipo_movimiento__nombre="Compra"  # Suponiendo que el tipo de movimiento para compras es "Compra"
+                    movimiento__tipo_movimiento__nombre="Compra"
                 ).order_by('movimiento__fecha')
 
                 ventas = DetalleMovimiento.objects.filter(
-                    sucursal_producto=sucursal_producto,
+                    sucursal_producto_id=sucursal_producto,
                     movimiento__tipo_movimiento__nombre="Venta"
                 ).aggregate(total_vendido=Sum('cantidad'))['total_vendido'] or 0
 
@@ -103,22 +132,7 @@ def save_payment_details(request, cart, total_amount, payment_method, local_quer
 
     except Exception as e:
         messages.error(request, f"Error al procesar el pago: {str(e)}")
-        return redirect('punto_venta')
-
-def save_ticket(request, cart, total_amount, payment_method, local_query, efectivo=None):
-    try:
-
-        id_movimiento = save_payment_details(request, cart, total_amount, payment_method, local_query)
-        now, fecha, hora = get_date()
-
-        with open_file(now, id_movimiento) as file:
-            write_header(file, fecha, hora)
-            write_detail(file, cart, total_amount)
-            write_payments(file, total_amount, payment_method, efectivo)
-
-    except Exception as e:
-        messages.error(request, f"Error al procesar el pago: {str(e)}")
-        return redirect('punto_venta')
+        return redirect(contexto)
 
 def get_date():
     now = datetime.now()
@@ -140,53 +154,79 @@ def open_file(now, id_movimiento):
         print(f"Error creating file: {e}")
         return None
 
-def write_header(file, fecha, hora):
-    file.write(" _____________________________________________________ \n")
-    file.write("|                                                     |\n")
+def write_header(file, fecha, hora, type_mov):
+    # Encabezado diferenciado según el tipo de movimiento
+
+    if type_mov == 1:
+        file.write(" _____________________________________________________ \n")
+        file.write("|                       VENTA                         |\n")
+    elif type_mov not in [1, 2]:
+        file.write(" _____________________________________________________ \n")
+        file.write("|                     SALIDA ESPECIAL                 |\n")
+
+    type_obj = TipoMovimiento.objects.get(id=type_mov)
+
     file.write("|RUT: 11.111.111-1                                    |\n")
     file.write("|RAZON SOCIAL: FANTASIA S.A                           |\n")
     file.write("|BLABLA NRO 999 - PISO 1234B                          |\n")
     file.write("|LAS CONDES - SANTIAGO F. -256784321                  |\n")
-    file.write("|GIRO: VENTAS AL POR MENOR DE MERCADERIA              |\n")
     file.write("|_____________________________________________________|\n")
     file.write(f" {fecha}          {hora}\n")
-    file.write(" Boleta Electronica:        123.456.789\n")
+    file.write(f" {type_obj.nombre.capitalize()} Electronica:        123.456.789\n")
     file.write(" CAJA: 1 CAJERO: RICHARD MAZUELOS\n")
     file.write("  D E T A L L E  \n")
     file.write(" --------------- \n")
 
-def write_detail(file, cart, total_amount):
+def write_detail(file, cart, total_amount, type_mov):
 
-    neto = round(total_amount / 1.19)
-    iva = round(total_amount - neto)
+    if type_mov not in [1, 2]:
+        for product_code, item in cart.items():
+            product_name = item["name"]
+            quantity = item["quantity"]
+            formatted_quantity = format_number(quantity)
 
-    for product_code, item in cart.items():
-        product_name = item["name"]
-        price = item["price"]
-        quantity = item["quantity"]
-        total_price = quantity * price
-        formatted_quantity = format_number(quantity)
-        formatted_price = format_number(price)
-        formatted_total_price = format_number(total_price)
+            if quantity > 1:
+                cantidad = (40 - (len(formatted_quantity) + len(product_name)))
+                file.write(f" Codigo: {product_code}\n")
+                file.write(f" {formatted_quantity} {product_name}{' ' * (cantidad+11)}\n")
+            else:
+                cantidad = 28 - len(product_name)
+                file.write(f" {product_code:>13} {product_name}{' ' * (cantidad+11)}\n")
 
-        if quantity > 1:
-            cantidad = (40 - (len(formatted_quantity) + len(formatted_price) + len(product_name)))
-            file.write(f" Codigo: {product_code}\n")
-            file.write(f" {formatted_quantity}X{formatted_price} {product_name}{' ' * cantidad}{'$'}{formatted_total_price:>11}\n")
-        else:
-            cantidad = 28 - len(product_name)
-            file.write(f" {product_code:>13} {product_name}{' ' * cantidad}{'$'}{formatted_total_price:>11}\n")
-    file.write(" ----------------------------------------------------- \n")
-    file.write(f"                                SUBTOTAL      $ {format_number(total_amount):>7}\n")
-    file.write(f"                        TOTAL AFECTO       $ {format_number(neto):>10}\n")
-    file.write(f"                        TOTAL EXCENTO      $          0\n")
-    file.write(f"                        TOTAL IVA 19%      $ {format_number(iva):>10}\n")
-    file.write(f"                                TOTAL         $ {format_number(total_amount):>7}\n")
+        file.write(" ----------------------------------------------------- \n")
+        file.write(f"                                         TOTAL SALIDA  \n")
+    
+    else:
+        neto = round(total_amount / 1.19)
+        iva = round(total_amount - neto)
 
-def write_payments(file, total_amount, payment_method, efectivo):
+        for product_code, item in cart.items():
+            product_name = item["name"]
+            price = item["price"]
+            quantity = item["quantity"]
+            total_price = quantity * price
+            formatted_quantity = format_number(quantity)
+            formatted_price = format_number(price)
+            formatted_total_price = format_number(total_price)
+
+            if quantity > 1:
+                cantidad = (40 - (len(formatted_quantity) + len(formatted_price) + len(product_name)))
+                file.write(f" Codigo: {product_code}\n")
+                file.write(f" {formatted_quantity}X{formatted_price} {product_name}{' ' * cantidad}{'$'}{formatted_total_price:>11}\n")
+            else:
+                cantidad = 28 - len(product_name)
+                file.write(f" {product_code:>13} X {product_name}{' ' * cantidad}{'$'}{formatted_total_price:>11}\n")
+        file.write(" ----------------------------------------------------- \n")
+        file.write(f"                                SUBTOTAL      $ {format_number(total_amount):>7}\n")
+        file.write(f"                        TOTAL AFECTO       $ {format_number(neto):>10}\n")
+        file.write(f"                        TOTAL EXCENTO      $          0\n")
+        file.write(f"                        TOTAL IVA 19%      $ {format_number(iva):>10}\n")
+        file.write(f"                                TOTAL         $ {format_number(total_amount):>7}\n")
+
+def write_payments(file, total_amount, payment_method, cash):
 
     try:
-        payment_quantity = int(efectivo) if efectivo else 0 # Convert to integer if it's a string
+        payment_quantity = int(cash) if cash else 0 # Convert to integer if it's a string
     except ValueError:
         print("Error: 'efectivo' Debe ser un valor válido.")
         return
@@ -207,8 +247,3 @@ def write_payments(file, total_amount, payment_method, efectivo):
 
 def format_number(number):
     return "{:,.0f}".format(number).replace(",", ".")
-
-def clear_cart(request):
-    request.session['cart'] = {}
-    request.session['total_price'] = 0
-    request.session['local_query'] = ''

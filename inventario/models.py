@@ -12,7 +12,7 @@ class CStateMovimiento(models.Model):
 
 class PagoMovimiento(models.Model):
     id_pago = models.IntegerField()
-    metodo = models.ForeignKey(MetodosPago, on_delete=models.CASCADE)
+    metodo = models.ForeignKey(MetodosPago, on_delete=models.CASCADE, default=None)
     monto = models.IntegerField()
 
     class Meta:
@@ -36,7 +36,7 @@ class Movimiento(models.Model):
     auxiliar = models.ForeignKey(Auxiliar, on_delete=models.CASCADE)  # Usando el modelo Auxiliar
     precio_total = models.IntegerField(blank=True, null=True)
     coste_total = models.IntegerField()
-    pago = models.ForeignKey(PagoMovimiento, on_delete=models.CASCADE)  # Usando el modelo PagoMovimiento
+    pago = models.ForeignKey(PagoMovimiento, null=True, blank=True, on_delete=models.SET_NULL)  # Usando el modelo PagoMovimiento
 
     def __str__(self):
         return f"Movimiento: {self.id}"

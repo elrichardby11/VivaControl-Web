@@ -49,10 +49,10 @@ Punto de Salida - Viva Control
                     <select class="form-select" id="tipo" name="tipo" aria-label="Floating label select example">
                         <option value="">Seleccione Tipo</option>
                         {% for tipo in tipos %}
-                        <option value="{{ tipo.id }}" {% if local_query == tipo.id|stringformat:"s" %}selected{% endif %}>{{ tipo.nombre }}</option>
+                        <option value="{{ tipo.id }}" {% if tipo_query == tipo.id|stringformat:"s" %}selected{% endif %}>{{ tipo.nombre }}</option>
                         {% endfor %}
                     </select>
-                    <label for="local">Tipo:</label>
+                    <label for="tipo">Tipo:</label>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@ Punto de Salida - Viva Control
                             <td>{{ item.name }}</td>
                             <td>{{ item.price }}</td>
                             <td>
-                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' code %}">
+                                <form method="POST" action="{% url 'actualizar_cantidad_carrito' 'punto_otros' code %}">
                                     {% csrf_token %}
                                     <input type="number" name="cantidad" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" class="form-control" style="width: 80px;">
                                     <button type="submit" class="btn btn-primary btn-sm mt-2">Actualizar</button>
@@ -89,7 +89,7 @@ Punto de Salida - Viva Control
                             <td>{{ item.total }}</td>
                             <td class="text-center">
                                 <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
-                                <a href="{% url 'eliminar_p_carrito' code %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="{% url 'eliminar_p_carrito' 'punto_otros' code %}" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -101,7 +101,7 @@ Punto de Salida - Viva Control
             <div class="form-floating mb-3">
                 <h5>Total: {{total_price}}</h5>
             </div>
-            <form method="POST" action="{% url 'punto_venta_pagar' %}">
+            <form method="POST" action="{% url 'punto_confirmacion' 'punto_otros' %}">
                         <div class="form-floating">
                             <input type="text" class="form-control" id="comentario" name="comentario" placeholder="" value="">
                             <label for="comentario">Comentario</label>

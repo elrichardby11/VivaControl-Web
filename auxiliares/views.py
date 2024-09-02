@@ -1,20 +1,35 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from auxiliares.models import Comuna, TipoAuxiliar, Auxiliar
-
+from auxiliares.utlis import verify_rut
 
 def auxiliares(request):
     auxiliares = Auxiliar.objects.all()
     tipos = TipoAuxiliar.objects.all()
-    comunas=Comuna.objects.all()
+    comunas = Comuna.objects.all()
 
-    return render (request,'auxiliares.html', context={"auxiliares": auxiliares,
+    return render(request,'auxiliares.html', context={"auxiliares": auxiliares,
                                                        "tipos": tipos,
                                                        "comunas": comunas} )
 
 def registrar_auxiliar(request):
-    rut = request.POST['txtRut']
-    dv = request.POST['txtDV']
+    
+    rut_completo = str(request.POST['txtRut']).split("-") if (len(str(request.POST['txtRut']).split("-")) == 2) else ""
+
+    if not rut_completo:
+        messages.error(request, f"Error, debe introducir un rut válido! (10123456-1)")
+        return redirect("auxiliares")
+
+    rut = rut_completo[0]
+    dv = rut_completo[1]
+    dv = dv.lower() if (not dv.isdigit()) else dv
+
+    print(dv, verify_rut(rut))
+
+    if dv != verify_rut(rut):
+        messages.error(request, f"Por favor, verifique el rut!")
+        return redirect("auxiliares")
+    
     razon_social = request.POST["txtRazonSocial"]
     direccion = request.POST["txtDireccion"]
     web = request.POST["txtSitioWeb"]

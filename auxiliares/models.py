@@ -28,7 +28,7 @@ class Comuna(models.Model):
 
 class Auxiliar(models.Model):
     rut_auxiliar = models.IntegerField(primary_key=True)
-    dv = models.IntegerField()
+    dv = models.CharField(max_length=1)
     razon_social = models.CharField(max_length=50, blank=True)
     direccion = models.CharField(max_length=50)
     sitio_web = models.URLField(max_length=50, blank=True)

@@ -10,13 +10,9 @@
             <form action="{% url 'registrar_auxiliar' %} " method="POST">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="txtRut">Rut (sin DV) *</label>
-                    <input type="text" class="form-control" id="txtRut" name="txtRut" placeholder="10123456" required>
+                    <label for="txtRut">Rut (con DV) *</label>
+                    <input type="text" class="form-control" id="txtRut" name="txtRut" placeholder="10123456-2" required>
                 </div>
-                <div class="form-group">
-                    <label for="txtDV">Dígito Verificador (DV)</label>
-                    <input type="text" class="form-control" id="txtDV" name="txtDV" readonly>
-                </div>                
                 <div class="form-group">
                     <label for="txtRazonSocial">Razón Social (si corresponde)</label>
                     <input type="text" class="form-control" id="txtRazonSocial" name="txtRazonSocial" placeholder="Si es empresa ingresa razon social">
@@ -115,45 +111,5 @@
     </div>
 </div>
 
-
-<script>
-    function calcularDV(rut) {
-        var rutStr = rut.toString();
-        var numerosAMultiplicar = [3, 2, 7, 6, 5, 4, 3, 2];
-        var suma = 0;
-        for (var i = 0; i < numerosAMultiplicar.length; i++) {
-            suma += parseInt(rutStr.charAt(i)) * numerosAMultiplicar[i];
-        }
-        var dv = 11 - (suma % 11);
-        if (dv == 11) {
-            dv = 0;
-        } else if (dv == 10) {
-            dv = 'K';
-        }
-        return dv;
-    }
-
-    function mostrarDV(dv) {
-        if (dv === 'K' || dv === 0) {
-            return dv;
-        }
-        return dv;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var txtRut = document.getElementById('txtRut');
-        var txtDV = document.getElementById('txtDV');
-
-        txtRut.addEventListener('input', function() {
-            var rut = txtRut.value;
-            if (rut.length == 8) {
-                var dv = calcularDV(rut);
-                txtDV.value = mostrarDV(dv);
-            } else {
-                txtDV.value = ''; // Limpiar el campo DV si el RUT no tiene 8 dígitos
-            }
-        });
-    });
-</script>
 
 {% endblock content %}

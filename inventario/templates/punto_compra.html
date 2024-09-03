@@ -9,12 +9,39 @@ Punto de Compra - Viva Control
 <div class="container mt-4">
     <h1>Punto de Compra</h1>
     <br>
-    <form method="GET" action="{% url 'inventario' %}">
+    <!-- Mensajes de éxito y error -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% else %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% endif %}
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="GET" action="{% url 'punto_compra' %}" id="product-form">
         <div class="row g-2">
             <div class="col-md">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="search" name="search" placeholder="12345678" value="{{ search_query }}">
-                    <label for="search">Buscar Producto (código barras)</label>
+                    <input type="text" class="form-control" id="codigo_barras" name="codigo_barras" placeholder="12345678" value="">
+                    <label for="codigo_barras">Agregar Producto (código barras)</label>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-floating">
+                    <select class="form-select" id="prov" name="prov" aria-label="Floating label select example">
+                        <option value="">Seleccione Proveedor</option>
+                        {% for prov in proveedores %}
+                        <option value="{{ prov.rut_auxiliar }}" {% if prov_query == prov.rut_auxiliar|stringformat:"s" %}selected{% endif %}>{{prov.rut_auxiliar}} - {{ prov.razon_social }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="prov">Proveedor: </label>
                 </div>
             </div>
             <div class="col-md">
@@ -29,64 +56,103 @@ Punto de Compra - Viva Control
                 </div>
             </div>
         </div>
+        <button type="submit" class="btn btn-primary mt-3">Añadir Producto</button>
     </form>
     <br>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Código de Barras</th>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Opciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in page_obj %}
-            <tr>
-                <td>{{ row.id_producto.id_producto }}</td>
-                <td>{{ row.id_producto.nombre }}</td>
-                <td>{{ row.cantidad }}</td>
-                <td>{{ row.precio }}</td>
-                <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page=1&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="First">
-                    <span aria-hidden="true">&laquo;&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {% endif %}
-            {% for num in page_obj.paginator.page_range %}
-            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                <a class="page-link" href="?page={{ num }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}">{{ num }}</a>
-            </li>
-            {% endfor %}
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query }}&tipo={{ tipo_query }}&estado={{ estado_query }}" aria-label="Last">
-                    <span aria-hidden="true">&raquo;&raquo;</span>
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="table-wrapper">
+                <form method="POST" action="{% url 'update_button' 'code' %}">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Código de Barras</th>
+                                <th>Nombre</th>
+                                <th>Precio Coste C/U</th>
+                                <th>Cantidad</th>
+                                <th>Total Coste</th>
+                                <th>Precio Venta C/U</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for code, item in cart.items %}
+                            <tr>
+                                <td>{{ code }}</td>
+                                <td>{{ item.name }}</td>
+                                <td><input type="number" name="cost_price_{{ code }}" value="{{ item.cost_price }}" min="0" class="form-control"></td>
+                                <td><input type="number" name="quantity_{{ code }}" value="{{ item.quantity }}" min="1" class="form-control" style="width: 80px;"></td>
+                                <td>{{ item.total }}</td>
+                                <td><input type="number" name="sale_price_{{ code }}" value="{{ item.sale_price }}" min="0" class="form-control"></td>
+                                <td class="text-center">
+                                    <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
+                                    <a href="{% url 'eliminar_p_carrito' 'punto_compra' code %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary mt-3">Actualizar Todo</button>
+                </form>
+                            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-floating mb-3">
+                <h5>Coste Total: {{total}}</h5>
+            </div>
+            <form method="POST" action="{% url 'punto_confirmacion' 'punto_compra' %}">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="metodo_pago" name="metodo_pago" aria-label="Floating label select example">
+                        <option value="">Seleccione Método de Pago</option>
+                        {% for metodo in metodos %}
+                        <option value="{{ metodo.id }}" {% if local_query == metodo.id|stringformat:"s" %}selected{% endif %}>{{ metodo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="metodo_pago">Método de Pago:</label>
+                </div>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="efectivo" name="efectivo" placeholder="10500" value="">
+                    <label for="efectivo">Monto Efectivo</label>
+                </div>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-3" >Agregar Factura</button>
+            </form>
+        </div>
+    </div>
 </div>
 <br>
 
 {% endblock content %}
+
+{% block extra_styles %}
+<style>
+    .table-wrapper {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .table-wrapper thead th {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 2;
+    }
+</style>
+{% endblock extra_styles %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const barcodeInput = document.getElementById('codigo_barras');
+        barcodeInput.focus();
+
+        // Enfocar el input cada vez que el formulario se envíe
+        const form = document.getElementById('product-form');
+        form.addEventListener('submit', function() {
+            setTimeout(() => {
+                barcodeInput.focus();
+            }, 10);
+        });
+    });
+</script>
+{% endblock extra_scripts %}

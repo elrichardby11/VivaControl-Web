@@ -83,7 +83,7 @@ Punto de Compra - Viva Control
                                 <td>{{ item.name }}</td>
                                 <td><input type="number" name="cost_price_{{ code }}" value="{{ item.cost_price }}" min="0" class="form-control"></td>
                                 <td><input type="number" name="quantity_{{ code }}" value="{{ item.quantity }}" min="1" class="form-control" style="width: 80px;"></td>
-                                <td>{{ item.total }}</td>
+                                <td>{{ item.total_cost }}</td>
                                 <td><input type="number" name="sale_price_{{ code }}" value="{{ item.sale_price }}" min="0" class="form-control"></td>
                                 <td class="text-center">
                                     <a href="{% url 'producto_edit' code %}" class="btn btn-dark btn-sm">Ver Producto</a>
@@ -99,7 +99,9 @@ Punto de Compra - Viva Control
         </div>
         <div class="col-md-2">
             <div class="form-floating mb-3">
-                <h5>Coste Total: {{total}}</h5>
+                <h5>Coste Total: <span id="total-cost">{{ total_cost }}</span></h5>
+                <h5>Precio Total: <span id="total-sale">{{ total_sale }}</span></h5>
+                <h5>Ganancia (Estimada): <span id="ganancia"></span></h5>
             </div>
             <form method="POST" action="{% url 'punto_confirmacion' 'punto_compra' %}">
                 <div class="form-floating mb-3">
@@ -154,5 +156,11 @@ Punto de Compra - Viva Control
             }, 10);
         });
     });
+
+    var totalCost = parseInt(document.getElementById('total-cost').innerText);
+    var totalSale = parseInt(document.getElementById('total-sale').innerText);
+    var ganancia = totalSale - totalCost;
+    document.getElementById('ganancia').innerText = ganancia.toFixed(0);
 </script>
+
 {% endblock extra_scripts %}

@@ -195,7 +195,7 @@ def punto_venta(request):
                 return render(request, 'punto_venta.html', context)
 
             quantity = product.cantidad
-            print(product)
+
             if code_query in cart and cart[code_query]["quantity"] >= quantity:
                 messages.error(request, "Producto fuera de stock.")
                 return render(request, 'punto_venta.html', context)
@@ -251,10 +251,14 @@ def punto_compra(request):
     if 'compra_total_cost' not in request.session:
         request.session['compra_total_cost'] = 0
 
+    if 'compra_total_sale' not in request.session:
+        request.session['compra_total_sale'] = 0
+
     cart = request.session['compra_cart']
     local_query = request.session['compra_local_query']
     prov_query = request.session['compra_prov_query']
     total_cost = request.session['compra_total_cost']
+    total_sale = request.session['compra_total_sale']
 
     context = {
         "locales": locales,
@@ -264,7 +268,8 @@ def punto_compra(request):
         "local_query": local_query,
         "prov_query": prov_query,
         "codigo_barras": request.GET.get('codigo_barras', ''),
-        "total": total_cost
+        "total_cost": total_cost,
+        "total_sale": total_sale
     }
 
     if request.method == "GET":
@@ -301,33 +306,40 @@ def punto_compra(request):
             product = Producto.objects.filter(id_producto=code_query).first()
 
             if not product:
-                messages.error(request, "Producto no encontrado.")
+                messages.error(request, "Producto no encontrado. Por favor, agregelo.")
                 return render(request, 'punto_compra.html', context)
 
             # Añadir o actualizar el producto en el carrito
             if code_query in cart:
                 cart[code_query]["quantity"] += 1
-                cart[code_query]["total"] = cart[code_query]["cost_price"] * cart[code_query]["quantity"]
+                cart[code_query]["total_cost"] = cart[code_query]["cost_price"] * cart[code_query]["quantity"]
+                cart[code_query]["total_sale"] = cart[code_query]["sale_price"] * cart[code_query]["quantity"]
             else:
+                # Calcular precio de venta anterior de referencia
+                sale_price = SucursalProducto.objects.filter(id_producto=code_query, id_sucursal=new_local_query).first()
                 cart[code_query] = {
                     "name": product.nombre,
                     "cost_price": 1,
                     "quantity": 1,
-                    "total": 1,
-                    "sale_price": 1,
+                    "total_cost": 1,
+                    "sale_price": sale_price.precio if sale_price is not None else 1, # Tomar precio de venta anterior si existe
                 }
 
-            cart[code_query]["total"] = cart[code_query]["cost_price"] * cart[code_query]["quantity"]
-            total_cost_price = sum(item["total"] for item in cart.values())
+            cart[code_query]["total_cost"] = cart[code_query]["cost_price"] * cart[code_query]["quantity"]
+            cart[code_query]["total_sale"] = cart[code_query]["sale_price"] * cart[code_query]["quantity"]
+            total_cost_price = sum(item["total_cost"] for item in cart.values())
+            total_sale_price = sum(item["total_sale"] for item in cart.values())
 
             request.session['compra_cart'] = cart
             request.session['compra_total_cost'] = total_cost_price
+            request.session['compra_total_sale'] = total_sale_price
 
             context.update({
                 "local_query": new_local_query,
                 "prov_query": new_prov_query,
                 "codigo_barras": code_query,
-                "total": total_cost_price
+                "total_cost": total_cost_price,
+                "total_sale": total_sale_price,
             })
 
             messages.success(request, f"Producto encontrado: {product.nombre}.")
@@ -516,18 +528,25 @@ def update_button(request, code):
         quantity = request.POST.get(f'quantity_{code}')
         sale_price = request.POST.get(f'sale_price_{code}')
         
-        if cost_price is not None:
-            item['cost_price'] = int(cost_price)
-        if quantity is not None:
-            item['quantity'] = int(quantity)
-        if sale_price is not None:
-            item['sale_price'] = int(sale_price)
+        try:
+            if cost_price is not None:
+                item['cost_price'] = int(cost_price)
+            if quantity is not None:
+                item['quantity'] = int(quantity)
+            if sale_price is not None:
+                item['sale_price'] = int(sale_price)
+        except ValueError:
+            messages.error(request, "Error al convertir los valores, deben ser válidos.")
+            return redirect("punto_compra")
         
-        # Actualiza el total coste del item
-        item['total'] = item['cost_price'] * item['quantity']
+        # Actualiza el total de precios del item
+        item['total_cost'] = item['cost_price'] * item['quantity']
+        item['total_sale'] = item['sale_price'] * item['quantity']
     
-    total_price = sum(item["total"] for item in cart.values())
-    request.session["compra_total_cost"] = total_price
+    total_price_cost = sum(item["total_cost"] for item in cart.values())
+    total_price_sale = sum(item["total_sale"] for item in cart.values())
+    request.session["compra_total_cost"] = total_price_cost
+    request.session["compra_total_sale"] = total_price_sale
     request.session["compra_cart"] = cart
 
     # Guarda la sesión actualizada
@@ -538,32 +557,43 @@ def update_button(request, code):
 
 @login_required
 def eliminar_producto_carrito(request, contexto, code):
-        
-    if (contexto != "punto_compra") and (contexto != "punto_venta") and (contexto != "punto_otros"):
+    # Validación de contexto
+    if contexto not in ["punto_compra", "punto_venta", "punto_otros"]:
         messages.error(request, "Error al actualizar el carrito.")
         return redirect("puntos")
     
-    if contexto == 'punto_venta':
-        cart_key = 'venta_cart'
-        total_price_key = 'venta_total_price'
-    elif contexto == "punto_compra":
-        cart_key = "compra_cart"
-        total_price_key = "compra_total_cost"
-    else:
-        cart_key = 'otros_cart'
-        total_price_key = 'otros_total_price'
+    # Definición de claves según el contexto
+    contexto_config = {
+        "punto_venta": {"cart_key": "venta_cart", "total_price_key": "venta_total_price"},
+        "punto_compra": {"cart_key": "compra_cart", "total_price_key": "compra_total_cost"},
+        "punto_otros": {"cart_key": "otros_cart", "total_price_key": "otros_total_price"}
+    }
+    
+    cart_key = contexto_config[contexto]["cart_key"]
+    total_price_key = contexto_config[contexto]["total_price_key"]
 
+    # Obtención del carrito y totales de la sesión
     cart = request.session.get(cart_key, {})
     total_price = request.session.get(total_price_key, 0)
-    
+
     if code not in cart:
         messages.success(request, "El producto no se encuentra en el carrito.")
         return redirect(contexto)
 
-    total_price -= int(cart[code]['total'])
+    # Actualización de totales y eliminación del producto
+    if contexto == "punto_compra":
+        total_sale = request.session.get('compra_total_sale', 0)
+        total_price -= int(cart[code]['total_cost'])
+        total_sale -= int(cart[code]['total_sale'])
+        request.session['compra_total_sale'] = total_sale
+    else:
+        total_price -= int(cart[code]['total'])
+    
     del cart[code]
     request.session[cart_key] = cart
     request.session[total_price_key] = total_price
+
+    # Mensaje de éxito y redirección
     messages.success(request, "Producto eliminado del carrito.")
     return redirect(contexto)
 

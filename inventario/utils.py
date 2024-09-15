@@ -17,10 +17,10 @@ def save_ticket(request, contexto, cart, total_amount, local_query, type_mov, pa
 
         with open_file(now, id_movimiento) as file:
             write_header(file, fecha, hora, type_mov)
-            write_detail(file, cart, total_amount, type_mov)
+            write_detail(file, cart, total_amount, type_mov, total_price_cost)
 
             if type_mov == 1:
-                write_payments(file, total_amount, payment_method, cash)
+                write_payments(file, total_amount, payment_method, cash, total_price_cost)
             else:
                 file.write(" -------------------- SALIDA ESPECIAL ---------------- \n")
                 file.write(" Nota: \n")
@@ -201,7 +201,7 @@ def write_header(file, fecha, hora, type_mov):
     file.write("  D E T A L L E  \n")
     file.write(" --------------- \n")
 
-def write_detail(file, cart, total_amount, type_mov):
+def write_detail(file, cart, total_amount, type_mov, total_price_cost=None):
 
     if type_mov not in [1, 2]:
         for product_code, item in cart.items():
@@ -223,6 +223,7 @@ def write_detail(file, cart, total_amount, type_mov):
     else:
         if type_mov == 1:
             price_key = "cost_price"
+            total_amount = total_price_cost
         else:
             price_key = "price"
 
@@ -252,7 +253,9 @@ def write_detail(file, cart, total_amount, type_mov):
         file.write(f"                        TOTAL IVA 19%      $ {format_number(iva):>10}\n")
         file.write(f"                                TOTAL         $ {format_number(total_amount):>7}\n")
 
-def write_payments(file, total_amount, payment_method, cash):
+def write_payments(file, total_amount, payment_method, cash, total_price_cost=None):
+
+    total_amount = total_price_cost if total_price_cost is not None else total_amount
 
     try:
         payment_quantity = int(cash) if cash else 0 # Convert to integer if it's a string

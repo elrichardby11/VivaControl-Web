@@ -36,7 +36,7 @@ Detalle - Viva Control
                 <td>{{ detalle.cantidad }}</td>
                 <td>{{ detalle.precio_unitario }}</td>
                 <td>{{ detalle.coste_unitario }}</td>
-                <td class="text-center"><a href="" class="btn btn-dark btn-md">Ver Producto</a> </td>
+                <td class="text-center"><a href="{% url 'producto_edit' detalle.sucursal_producto.id_producto.id_producto %}" class="btn btn-dark btn-md">Ver Producto</a> </td>
             </tr>
                         
             {% endfor %}

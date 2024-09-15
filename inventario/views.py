@@ -611,14 +611,20 @@ def confirmar(request, contexto):
         cart_key = 'venta_cart'
         local_query_key = 'venta_local_query'
         total_price_key = 'venta_total_price'
-    else:  # 'otros'
+    elif contexto == 'punto_otros':
         cart_key = 'otros_cart'
         local_query_key = 'otros_local_query'
         total_price_key = 'otros_total_price'
         type_query_key = 'otros_tipo_query'
-
+    else: # Punto Compra
+        cart_key = 'compra_cart'
+        local_query_key = 'compra_local_query'
+        total_price_key = 'compra_total_sale' # precio venta total
+        
     total_amount = request.session.get(total_price_key, 0)
     local_query = request.session.get(local_query_key, '')
+    total_price_cost = request.session.get('compra_total_cost', 0)
+    compra_prov = request.session.get('compra_prov_query', "")
 
     if not local_query_key:
         messages.error(request, "Por favor, selecciona una sucursal.")
@@ -674,6 +680,32 @@ def confirmar(request, contexto):
         current_cart = request.session.get(cart_key, {})
         save_ticket(request, contexto, current_cart, total_amount, local_query, tipo_query)
 
+    else:
+        # Lógica para Punto de Compra
+
+        # Obtener el método de pago seleccionado
+        payment_method_id = request.POST.get('metodo_pago')
+        if not payment_method_id:
+            messages.error(request, "Por favor, selecciona un método de pago.")
+            return redirect(contexto)
+
+        # Obtener el método de pago de la base de datos
+        payment_method = MetodosPago.objects.filter(id=payment_method_id).first()
+
+        if not payment_method:
+            messages.error(request, "Método de pago no válido.")
+            return redirect(contexto)
+
+        # Obtener rut del proveedor de la base de datos
+        rut_aux = Auxiliar.objects.get(rut_auxiliar=compra_prov, tipo_auxiliar=1)
+
+        if not rut_aux:
+            messages.error(request, "Error al obtener rut de proveedor.")
+            return redirect(contexto)    
+
+        current_cart = request.session.get(cart_key, {})
+        save_ticket(request, contexto, current_cart, total_amount, local_query, 1, payment_method=payment_method, rut_aux=rut_aux, total_price_cost=total_price_cost)
+
     clear_cart(request, contexto)
 
     messages.success(request, "Transacción realizada con éxito.")
@@ -687,10 +719,21 @@ def clear_cart(request, contexto):
         cart_key = 'venta_cart'
         local_query_key = 'venta_local_query'
         total_price_key = 'venta_total_price'
+    elif contexto == 'punto_compra':
+        cart_key = 'compra_cart'
+        local_query_key = 'compra_local_query'
+        total_price_key = 'compra_total_sale' # precio venta total
     else:  # 'otros'
         cart_key = 'otros_cart'
         local_query_key = 'otros_local_query'
         total_price_key = 'otros_total_price'
+
+    total_price_cost = request.session.get('compra_total_cost', 0)
+    compra_prov = request.session.get('compra_prov_query', "")
+
+    if total_price_cost or compra_prov:
+        request.session["compra_total_cost"] = 0
+        request.session["compra_prov_query"] = 0
 
     # Eliminar el carrito de la sesión
     request.session[cart_key] = {}

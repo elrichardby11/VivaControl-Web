@@ -9,10 +9,10 @@ from auxiliares.models import Auxiliar
 from productos.models import Producto
 from .models import PagoMovimiento, Movimiento, DetalleMovimiento, SucursalProducto, TipoMovimiento, CStateMovimiento
 
-def save_ticket(request, contexto, cart, total_amount, local_query, type_mov, payment_method=None, cash=None):
+def save_ticket(request, contexto, cart, total_amount, local_query, type_mov, payment_method=None, cash=None, rut_aux=None, total_price_cost=None):
     try:
 
-        id_movimiento = save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method)
+        id_movimiento = save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method, rut_aux, total_price_cost)
         now, fecha, hora = get_date()
 
         with open_file(now, id_movimiento) as file:
@@ -31,7 +31,7 @@ def save_ticket(request, contexto, cart, total_amount, local_query, type_mov, pa
         messages.error(request, f"Error al procesar la transacción: {str(e)}")
         return redirect(contexto)
 
-def save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method):
+def save_payment_details(request, contexto, cart, total_amount, local_query, type_mov, payment_method, rut_aux=None, total_price_cost=None):
     try:
         # Obtener la sucursal
         sucursal = Sucursal.objects.get(id_sucursal=local_query)
@@ -55,8 +55,8 @@ def save_payment_details(request, contexto, cart, total_amount, local_query, typ
             else:
                 pago_movimiento = None
 
-            # Obtener el auxiliar genérico para el cliente
-            auxiliar = Auxiliar.objects.get(rut_auxiliar=1)
+            # Obtener el auxiliar
+            auxiliar = rut_aux if rut_aux else Auxiliar.objects.get(rut_auxiliar=1)
             # Precio total 0 si es salida especial
             total_amount = 0 if type_mov not in [1, 2] else total_amount
 
@@ -68,65 +68,89 @@ def save_payment_details(request, contexto, cart, total_amount, local_query, typ
                 cstate_movimiento=cstate_movimiento,
                 auxiliar=auxiliar,
                 precio_total=total_amount,
-                coste_total=0,  # Lo calcularemos a continuación
+                coste_total=total_price_cost if total_price_cost else 0,  # Lo calcularemos a continuación
                 pago=pago_movimiento
             )
 
-            coste_total = 0  # Inicializar coste total
+            if movimiento.coste_total == 0:
+                coste_total = 0  # Inicializar coste total
 
-            # Iterar sobre el carrito y crear DetalleMovimiento
-            for product_id, item in cart.items():
-                cantidad = item['quantity']
-                producto = Producto.objects.get(id_producto=product_id)
+                # Iterar sobre el carrito y crear DetalleMovimiento
+                for product_id, item in cart.items():
+                    cantidad = item['quantity']
+                    producto = Producto.objects.get(id_producto=product_id)
 
-                # Obtener el SucursalProducto
-                sucursal_producto = SucursalProducto.objects.get(id_sucursal=sucursal, id_producto=producto)
+                    # Obtener el SucursalProducto
+                    sucursal_producto = SucursalProducto.objects.get(id_sucursal=sucursal, id_producto=producto)
+                    # Obtener compras previas y ventas
+                    compras = DetalleMovimiento.objects.filter(
+                        sucursal_producto=sucursal_producto,
+                        movimiento__tipo_movimiento__nombre="Compra"
+                    ).order_by('movimiento__fecha')
 
-                # Obtener compras previas y ventas
-                compras = DetalleMovimiento.objects.filter(
-                    sucursal_producto=sucursal_producto,
-                    movimiento__tipo_movimiento__nombre="Compra"
-                ).order_by('movimiento__fecha')
+                    ventas = DetalleMovimiento.objects.filter(
+                        sucursal_producto_id=sucursal_producto,
+                        movimiento__tipo_movimiento__nombre="Venta"
+                    ).aggregate(total_vendido=Sum('cantidad'))['total_vendido'] or 0
 
-                ventas = DetalleMovimiento.objects.filter(
-                    sucursal_producto_id=sucursal_producto,
-                    movimiento__tipo_movimiento__nombre="Venta"
-                ).aggregate(total_vendido=Sum('cantidad'))['total_vendido'] or 0
+                    contador = 0
+                    cantidad_restante = cantidad
+                    precio_coste = 0
 
-                contador = 0
-                cantidad_restante = cantidad
-                precio_coste = 0
+                    for compra in compras:
+                        if (compra.cantidad + contador) >= ventas:
+                            cantidad_disponible = (compra.cantidad + contador) - ventas
+                            if cantidad_restante <= cantidad_disponible:
+                                precio_coste = compra.coste_unitario
+                                coste_total += cantidad_restante * precio_coste
+                                DetalleMovimiento.objects.create(
+                                    movimiento=movimiento,
+                                    sucursal_producto=sucursal_producto,
+                                    cantidad=cantidad_restante,
+                                    precio_unitario=sucursal_producto.precio,
+                                    coste_unitario=precio_coste
+                                )
+                                cantidad_restante = 0
+                                break
+                            else:
+                                coste_total += cantidad_disponible * compra.coste_unitario
+                                cantidad_restante -= cantidad_disponible
+                                DetalleMovimiento.objects.create(
+                                    movimiento=movimiento,
+                                    sucursal_producto=sucursal_producto,
+                                    cantidad=cantidad_disponible,
+                                    precio_unitario=sucursal_producto.precio,
+                                    coste_unitario=compra.coste_unitario
+                                )
+                                ventas += cantidad_disponible
+                        contador += compra.cantidad
 
-                for compra in compras:
-                    if (compra.cantidad + contador) >= ventas:
-                        cantidad_disponible = (compra.cantidad + contador) - ventas
-                        if cantidad_restante <= cantidad_disponible:
-                            precio_coste = compra.coste_unitario
-                            coste_total += cantidad_restante * precio_coste
-                            DetalleMovimiento.objects.create(
-                                movimiento=movimiento,
-                                sucursal_producto=sucursal_producto,
-                                cantidad=cantidad_restante,
-                                precio_unitario=sucursal_producto.precio,
-                                coste_unitario=precio_coste
-                            )
-                            cantidad_restante = 0
-                            break
-                        else:
-                            coste_total += cantidad_disponible * compra.coste_unitario
-                            cantidad_restante -= cantidad_disponible
-                            DetalleMovimiento.objects.create(
-                                movimiento=movimiento,
-                                sucursal_producto=sucursal_producto,
-                                cantidad=cantidad_disponible,
-                                precio_unitario=sucursal_producto.precio,
-                                coste_unitario=compra.coste_unitario
-                            )
-                            ventas += cantidad_disponible
-                    contador += compra.cantidad
+                # Actualizar el coste total en el movimiento
+                movimiento.coste_total = coste_total
 
-            # Actualizar el coste total en el movimiento
-            movimiento.coste_total = coste_total
+            else:
+                # Iterar sobre el carrito y crear DetalleMovimiento
+                for product_id, item in cart.items():
+                    cantidad = item['quantity']
+                    producto = Producto.objects.get(id_producto=product_id)
+
+                    # Obtener el SucursalProducto
+                    sucursal_producto, created = SucursalProducto.objects.get_or_create(
+                        id_sucursal=sucursal, 
+                        id_producto=producto,
+                        defaults={
+                            'cantidad': 0, 
+                            'precio': item["sale_price"]
+                        }
+                    )
+                    DetalleMovimiento.objects.create(
+                        movimiento=movimiento,
+                        sucursal_producto=sucursal_producto,
+                        cantidad=cantidad,
+                        precio_unitario=item["sale_price"],
+                        coste_unitario=item["cost_price"]
+                    )
+
             movimiento.save()
             return movimiento.id
 
@@ -197,12 +221,17 @@ def write_detail(file, cart, total_amount, type_mov):
         file.write(f"                                         TOTAL SALIDA  \n")
     
     else:
+        if type_mov == 1:
+            price_key = "cost_price"
+        else:
+            price_key = "price"
+
         neto = round(total_amount / 1.19)
         iva = round(total_amount - neto)
 
         for product_code, item in cart.items():
             product_name = item["name"]
-            price = item["price"]
+            price = item[price_key]
             quantity = item["quantity"]
             total_price = quantity * price
             formatted_quantity = format_number(quantity)

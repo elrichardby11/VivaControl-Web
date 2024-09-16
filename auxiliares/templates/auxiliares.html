@@ -10,7 +10,7 @@
             <form action="{% url 'registrar_auxiliar' %} " method="POST">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="txtRut">Rut (con DV) *</label>
+                    <label for="txtRut">Rut (10123456-1) *</label>
                     <input type="text" class="form-control" id="txtRut" name="txtRut" placeholder="10123456-2" required>
                 </div>
                 <div class="form-group">
@@ -110,6 +110,72 @@
         </div>
     </div>
 </div>
+
+<script>
+    function calcularDV(rut) {
+        var numerosAMultiplicar = [3, 2, 7, 6, 5, 4, 3, 2];
+        var resultados = [];
+        var suma = 0;
+
+        // Convertir RUT a string, quitar caracteres no numéricos, y asegurar que solo tiene 8 dígitos
+        rut = rut.replace(/[^\d]/g, '');  
+        if (rut.length !== 8) {
+            return null;  // Si no tiene 8 dígitos, el RUT no es válido
+        }
+
+        // Multiplica cada dígito del RUT por los números definidos
+        for (var i = 0; i < rut.length; i++) {
+            var resultado_individual = parseInt(rut.charAt(i)) * numerosAMultiplicar[i];
+            resultados.push(resultado_individual);
+        }
+
+        // Suma los resultados de las multiplicaciones
+        for (var j = 0; j < resultados.length; j++) {
+            suma += resultados[j];
+        }
+
+        // Obtener el dígito verificador
+        var dvCalculado = 11 - (suma % 11);
+
+        // Ajusta el dígito verificador según las reglas
+        if (dvCalculado === 11) {
+            return '0';
+        } else if (dvCalculado === 10) {
+            return 'K';
+        } else {
+            return dvCalculado.toString();
+        }
+    }
+
+    function validarRut(rutCompleto) {
+        // Eliminar caracteres no válidos y convertir todo a mayúsculas (para la K)
+        rutCompleto = rutCompleto.replace(/[^\dKk]/g, '').toUpperCase();
+        
+        // Extraer los números y el dígito verificador ingresado
+        var rutNumeros = rutCompleto.slice(0, -1);  // Los primeros 8 dígitos del RUT
+        var dvIngresado = rutCompleto.slice(-1);  // El último carácter es el DV
+
+        var dvCalculado = calcularDV(rutNumeros);  // Calcula el DV
+
+        // Comparar el dígito verificador ingresado con el calculado
+        return dvIngresado === dvCalculado;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var txtRut = document.getElementById('txtRut');
+
+        txtRut.addEventListener('blur', function() {
+            var rut = txtRut.value;
+
+            if (!validarRut(rut)) {
+                alert("El RUT ingresado es incorrecto. Verifique el dígito verificador.");
+                txtRut.classList.add('is-invalid');  // Marca el campo como inválido
+            } else {
+                txtRut.classList.remove('is-invalid');  // Remueve la marca de inválido si el RUT es correcto
+            }
+        });
+    });
+</script>
 
 
 {% endblock content %}
